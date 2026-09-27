@@ -1,0 +1,4 @@
+# DEMO: bloqueia todo indexador enquanto o site não é publicado oficialmente.
+# REMOVER este bloqueio (ou trocar por um robots.txt normal) na entrega final.
+User-agent: *
+Disallow: /
