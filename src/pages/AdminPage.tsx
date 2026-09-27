@@ -5,6 +5,7 @@ import LoginForm from '../components/admin/LoginForm';
 import AvailabilityManager from '../components/admin/AvailabilityManager';
 import PendingRequests from '../components/admin/PendingRequests';
 import ConfirmedList from '../components/admin/ConfirmedList';
+import ResumoPainel from '../components/admin/ResumoPainel';
 
 type Aba = 'agenda' | 'pendentes' | 'confirmados';
 
@@ -50,6 +51,8 @@ export default function AdminPage() {
       </div>
 
       <div className="container">
+        <ResumoPainel key={aba} />
+
         <div className="admin-tabs">
           <button
             className={`admin-tab ${aba === 'pendentes' ? 'is-active' : ''}`}

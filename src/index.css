@@ -912,6 +912,43 @@ p {
   margin-bottom: 28px;
 }
 
+.resumo-painel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+
+@media (max-width: 700px) {
+  .resumo-painel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resumo-card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.resumo-card__numero {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--color-sage-dark);
+  line-height: 1;
+}
+
+.resumo-card__label {
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+}
+
 .admin-tabs {
   display: flex;
   gap: 8px;

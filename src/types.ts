@@ -1,5 +1,5 @@
 export type StatusHorario = 'disponivel' | 'reservado' | 'confirmado';
-export type StatusAgendamento = 'pendente' | 'confirmado' | 'recusado';
+export type StatusAgendamento = 'pendente' | 'confirmado' | 'recusado' | 'cancelado';
 
 export interface HorarioDisponivel {
   id: string;
