@@ -7,6 +7,7 @@ import { formatarDataHora, ordenarPorHorario } from '../../lib/agendamentos';
 export default function ConfirmedList() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [busca, setBusca] = useState('');
 
   useEffect(() => {
     async function carregar() {
@@ -22,10 +23,26 @@ export default function ConfirmedList() {
     carregar();
   }, []);
 
+  const buscaNormalizada = busca.trim().toLowerCase();
+  const filtrados = buscaNormalizada
+    ? agendamentos.filter((a) => a.nome_paciente.toLowerCase().includes(buscaNormalizada))
+    : agendamentos;
+
   return (
     <div className="admin-panel">
       <h2>Consultas confirmadas</h2>
       <p className="admin-panel__hint">Agendamentos já aprovados, da data mais próxima para a mais distante.</p>
+
+      {!carregando && agendamentos.length > 0 && (
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Buscar por nome do paciente..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          aria-label="Buscar por nome do paciente"
+        />
+      )}
 
       {carregando && <p className="scheduling__loading">Carregando...</p>}
 
@@ -33,8 +50,12 @@ export default function ConfirmedList() {
         <div className="empty-state">Nenhuma consulta confirmada ainda.</div>
       )}
 
+      {!carregando && agendamentos.length > 0 && filtrados.length === 0 && (
+        <div className="empty-state">Nenhuma consulta confirmada com esse nome.</div>
+      )}
+
       {!carregando &&
-        agendamentos.map((a) => (
+        filtrados.map((a) => (
           <div className="request-card" key={a.id}>
             <div className="request-card__info">
               <div className="request-card__name">{a.nome_paciente}</div>
