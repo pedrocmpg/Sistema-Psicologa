@@ -2,16 +2,13 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Agendamento } from '../../types';
 import { Calendar, Phone, Mail } from '../icons';
+import { formatarDataHora, ordenarPorHorario } from '../../lib/agendamentos';
 
-function formatarDataHora(data?: string, hora?: string) {
-  if (!data || !hora) return '—';
-  const [ano, mes, dia] = data.split('-').map(Number);
-  const d = new Date(ano, mes - 1, dia);
-  const dataFmt = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
-  return `${dataFmt} às ${hora.slice(0, 5)}`;
+interface PendingRequestsProps {
+  onChange?: () => void;
 }
 
-export default function PendingRequests() {
+export default function PendingRequests({ onChange }: PendingRequestsProps) {
   const [pedidos, setPedidos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
@@ -22,10 +19,9 @@ export default function PendingRequests() {
     const { data, error } = await supabase
       .from('agendamentos')
       .select('*, horarios_disponiveis(data, hora)')
-      .eq('status', 'pendente')
-      .order('criado_em', { ascending: true });
+      .eq('status', 'pendente');
 
-    if (!error) setPedidos((data as unknown as Agendamento[]) ?? []);
+    if (!error) setPedidos(ordenarPorHorario((data as unknown as Agendamento[]) ?? []));
     setCarregando(false);
   }
 
@@ -43,6 +39,7 @@ export default function PendingRequests() {
       return;
     }
     carregar();
+    onChange?.();
   }
 
   async function recusar(id: string) {
@@ -55,6 +52,7 @@ export default function PendingRequests() {
       return;
     }
     carregar();
+    onChange?.();
   }
 
   return (

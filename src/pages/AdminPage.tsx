@@ -5,14 +5,20 @@ import LoginForm from '../components/admin/LoginForm';
 import AvailabilityManager from '../components/admin/AvailabilityManager';
 import PendingRequests from '../components/admin/PendingRequests';
 import ConfirmedList from '../components/admin/ConfirmedList';
+import RecusadosList from '../components/admin/RecusadosList';
 import ResumoPainel from '../components/admin/ResumoPainel';
 
-type Aba = 'agenda' | 'pendentes' | 'confirmados';
+type Aba = 'pendentes' | 'confirmados' | 'recusados' | 'agenda';
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [carregandoSessao, setCarregandoSessao] = useState(true);
   const [aba, setAba] = useState<Aba>('pendentes');
+  const [refreshTick, setRefreshTick] = useState(0);
+
+  function bump() {
+    setRefreshTick((t) => t + 1);
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -51,17 +57,14 @@ export default function AdminPage() {
       </div>
 
       <div className="container">
-        <ResumoPainel key={aba} />
+        <ResumoPainel key={refreshTick} />
 
         <div className="admin-tabs">
           <button
             className={`admin-tab ${aba === 'pendentes' ? 'is-active' : ''}`}
             onClick={() => setAba('pendentes')}
           >
-            Pedidos pendentes
-          </button>
-          <button className={`admin-tab ${aba === 'agenda' ? 'is-active' : ''}`} onClick={() => setAba('agenda')}>
-            Agenda
+            Pendentes
           </button>
           <button
             className={`admin-tab ${aba === 'confirmados' ? 'is-active' : ''}`}
@@ -69,11 +72,21 @@ export default function AdminPage() {
           >
             Confirmados
           </button>
+          <button
+            className={`admin-tab ${aba === 'recusados' ? 'is-active' : ''}`}
+            onClick={() => setAba('recusados')}
+          >
+            Recusados
+          </button>
+          <button className={`admin-tab ${aba === 'agenda' ? 'is-active' : ''}`} onClick={() => setAba('agenda')}>
+            Agenda
+          </button>
         </div>
 
-        {aba === 'agenda' && <AvailabilityManager />}
-        {aba === 'pendentes' && <PendingRequests />}
+        {aba === 'pendentes' && <PendingRequests onChange={bump} />}
         {aba === 'confirmados' && <ConfirmedList />}
+        {aba === 'recusados' && <RecusadosList />}
+        {aba === 'agenda' && <AvailabilityManager />}
       </div>
     </div>
   );
