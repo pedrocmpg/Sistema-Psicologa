@@ -677,8 +677,8 @@ p {
 }
 
 /* Slot pronto para trocar a arte por foto: basta colocar um <img> dentro de .hero__art */
-.hero__art svg,
-.hero__art img {
+.hero__art > svg,
+.hero__art > img {
   position: absolute;
   inset: 0;
   width: 100%;
