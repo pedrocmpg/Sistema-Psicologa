@@ -13,4 +13,5 @@ export {
   Star,
   ChevronLeft,
   ChevronRight,
+  Repeat,
 } from 'lucide-react';

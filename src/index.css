@@ -1398,6 +1398,46 @@ p {
   vertical-align: middle;
 }
 
+.badge-semanal {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--color-sage-light);
+  color: var(--color-sage-dark);
+}
+
+.field--narrow {
+  max-width: 140px;
+}
+
+.field--narrow input {
+  width: 100%;
+}
+
+/* =========================================================
+   Cancelar consulta recorrente: escolher "só esta" ou "toda a série"
+   ========================================================= */
+.cancel-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.cancel-choice__question {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  text-align: right;
+  max-width: 220px;
+}
+
+.cancel-choice__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .admin-slot-row__spacer {
   flex: 1;
 }
