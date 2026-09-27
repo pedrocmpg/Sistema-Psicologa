@@ -40,8 +40,11 @@ export default function Scheduling() {
   const [sucesso, setSucesso] = useState(false);
 
   const diasContainerRef = useRef<HTMLDivElement>(null);
-  const [podeRolarEsquerda, setPodeRolarEsquerda] = useState(false);
-  const [podeRolarDireita, setPodeRolarDireita] = useState(false);
+  // Começam visíveis por padrão (otimista) — é corrigido assim que dá pra medir o container.
+  // Prefere mostrar a mais a esconder: se a medição falhar por algum motivo, a seta continua
+  // visível (clicar nela sem ter pra onde rolar não faz mal nenhum) em vez de sumir de vez.
+  const [podeRolarEsquerda, setPodeRolarEsquerda] = useState(true);
+  const [podeRolarDireita, setPodeRolarDireita] = useState(true);
 
   async function carregarHorarios() {
     setCarregando(true);
@@ -89,7 +92,13 @@ export default function Scheduling() {
   }
 
   useEffect(() => {
-    atualizarSetas();
+    // requestAnimationFrame garante que o layout já assentou antes de medir scrollWidth/clientWidth
+    const id = requestAnimationFrame(atualizarSetas);
+    window.addEventListener('resize', atualizarSetas);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('resize', atualizarSetas);
+    };
   }, [dias.length]);
 
   function rolar(direcao: 1 | -1) {
