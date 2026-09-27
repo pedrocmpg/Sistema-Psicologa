@@ -2,7 +2,7 @@
    Design tokens
    ========================================================= */
 :root {
-  color-scheme: light;
+  color-scheme: only light;
   --color-sage: #7c9885;
   --color-sage-dark: #55705f;
   --color-sage-light: #e7eee8;
@@ -42,6 +42,15 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Compensa a altura do header fixo, para a seção não ficar escondida atrás dele ao rolar até ela */
+#topo,
+#sobre,
+#especialidades,
+#agendamento,
+#contato {
+  scroll-margin-top: 96px;
 }
 
 body {
@@ -143,12 +152,16 @@ p {
 }
 
 .btn-primary {
-  background: var(--color-sage-dark);
-  color: var(--color-white);
+  /* gradiente (não cor sólida) de propósito: alguns navegadores "escurecem"
+     automaticamente botões de cor sólida e acabam deixando o texto ilegível;
+     um background-image faz o botão ficar de fora dessa reescrita. */
+  background-image: linear-gradient(var(--color-sage-dark), var(--color-sage-dark));
+  color: #ffffff;
+  forced-color-adjust: none;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #46604f;
+  background-image: linear-gradient(#46604f, #46604f);
   box-shadow: var(--shadow-sm);
 }
 
