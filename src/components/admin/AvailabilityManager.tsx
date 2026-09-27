@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { HorarioDisponivel, StatusHorario } from '../../types';
 import DatePicker from './DatePicker';
+import BatchAvailabilityForm from './BatchAvailabilityForm';
 
 function formatarDataLonga(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
@@ -121,6 +122,8 @@ export default function AvailabilityManager() {
           </button>
         )}
       </form>
+
+      <BatchAvailabilityForm onAdicionados={carregar} />
 
       {carregando && <p className="scheduling__loading">Carregando agenda...</p>}
 

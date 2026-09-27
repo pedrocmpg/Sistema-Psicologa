@@ -682,7 +682,8 @@ p {
 .field input[type='email'],
 .field input[type='password'],
 .field input[type='date'],
-.field input[type='time'] {
+.field input[type='time'],
+.field select {
   width: 100%;
   padding: 11px 14px;
   border-radius: var(--radius-sm);
@@ -693,7 +694,8 @@ p {
   color: var(--color-ink);
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: 2px solid var(--color-sage);
   outline-offset: 1px;
 }
@@ -1021,6 +1023,76 @@ p {
 
 .add-slot-form .field {
   margin-bottom: 0;
+}
+
+/* =========================================================
+   Adicionar horários em lote (recorrência)
+   ========================================================= */
+.batch-form-wrapper {
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.batch-form__toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-sage-dark);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.batch-form__toggle:hover {
+  text-decoration: underline;
+}
+
+.batch-form {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 520px;
+}
+
+.batch-form__row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.batch-form__row .field {
+  flex: 1;
+  min-width: 130px;
+}
+
+.weekday-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.weekday-picker__day {
+  width: 44px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.weekday-picker__day:hover {
+  border-color: var(--color-sage);
+}
+
+.weekday-picker__day.is-selected {
+  background: var(--color-sage-dark);
+  border-color: var(--color-sage-dark);
+  color: #ffffff;
 }
 
 /* =========================================================
