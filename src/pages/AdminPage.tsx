@@ -84,7 +84,7 @@ export default function AdminPage() {
         </div>
 
         {aba === 'pendentes' && <PendingRequests onChange={bump} />}
-        {aba === 'confirmados' && <ConfirmedList />}
+        {aba === 'confirmados' && <ConfirmedList onChange={bump} />}
         {aba === 'recusados' && <RecusadosList />}
         {aba === 'agenda' && <AvailabilityManager />}
       </div>

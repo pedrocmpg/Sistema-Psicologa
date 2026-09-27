@@ -4,24 +4,54 @@ import type { Agendamento } from '../../types';
 import { Calendar, Phone, Mail } from '../icons';
 import { formatarDataHora, ordenarPorHorario } from '../../lib/agendamentos';
 
-export default function ConfirmedList() {
+interface ConfirmedListProps {
+  onChange?: () => void;
+}
+
+export default function ConfirmedList({ onChange }: ConfirmedListProps) {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [cancelando, setCancelando] = useState<string | null>(null);
+
+  async function carregar() {
+    setCarregando(true);
+    const { data, error } = await supabase
+      .from('agendamentos')
+      .select('*, horarios_disponiveis(data, hora)')
+      .eq('status', 'confirmado');
+
+    if (!error) setAgendamentos(ordenarPorHorario((data as unknown as Agendamento[]) ?? []));
+    setCarregando(false);
+  }
 
   useEffect(() => {
-    async function carregar() {
-      setCarregando(true);
-      const { data, error } = await supabase
-        .from('agendamentos')
-        .select('*, horarios_disponiveis(data, hora)')
-        .eq('status', 'confirmado');
-
-      if (!error) setAgendamentos(ordenarPorHorario((data as unknown as Agendamento[]) ?? []));
-      setCarregando(false);
-    }
     carregar();
   }, []);
+
+  async function cancelar(a: Agendamento) {
+    const confirmou = window.confirm(
+      `Tem certeza que deseja cancelar esta consulta?\n\n${a.nome_paciente} — ${formatarDataHora(
+        a.horarios_disponiveis?.data,
+        a.horarios_disponiveis?.hora
+      )}`
+    );
+    if (!confirmou) return;
+
+    setErro(null);
+    setCancelando(a.id);
+    const { error } = await supabase.rpc('cancelar_agendamento', { p_agendamento_id: a.id });
+    setCancelando(null);
+
+    if (error) {
+      setErro('Não foi possível cancelar a consulta.');
+      return;
+    }
+
+    carregar();
+    onChange?.();
+  }
 
   const buscaNormalizada = busca.trim().toLowerCase();
   const filtrados = buscaNormalizada
@@ -32,6 +62,8 @@ export default function ConfirmedList() {
     <div className="admin-panel">
       <h2>Consultas confirmadas</h2>
       <p className="admin-panel__hint">Agendamentos já aprovados, da data mais próxima para a mais distante.</p>
+
+      {erro && <div className="alert alert-error">{erro}</div>}
 
       {!carregando && agendamentos.length > 0 && (
         <input
@@ -71,6 +103,15 @@ export default function ConfirmedList() {
                   <Mail size={14} strokeWidth={2} aria-hidden="true" /> {a.email}
                 </span>
               </div>
+            </div>
+            <div className="request-card__actions">
+              <button
+                className="btn btn-danger btn-sm"
+                disabled={cancelando === a.id}
+                onClick={() => cancelar(a)}
+              >
+                {cancelando === a.id ? 'Cancelando...' : 'Cancelar'}
+              </button>
             </div>
           </div>
         ))}
