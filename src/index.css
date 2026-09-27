@@ -489,6 +489,11 @@ p {
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-top: 40px;
+  align-items: stretch;
+}
+
+.specialties__grid > .reveal {
+  display: flex;
 }
 
 @media (max-width: 980px) {
@@ -509,6 +514,7 @@ p {
   padding: 28px 24px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
 }
 
 .specialty-card:hover {
