@@ -3,6 +3,8 @@ import { supabase } from '../../lib/supabase';
 import { gerarHorariosLote } from '../../lib/lote';
 import { hojeISO } from '../../lib/date';
 import DatePicker from './DatePicker';
+import ToolCard from './ToolCard';
+import { Repeat } from '../icons';
 
 interface BatchAvailabilityFormProps {
   onAdicionados: () => void;
@@ -28,7 +30,6 @@ function rotuloIntervalo(min: number) {
 }
 
 export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabilityFormProps) {
-  const [aberto, setAberto] = useState(false);
   const [diasSelecionados, setDiasSelecionados] = useState<number[]>([]);
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFim, setHoraFim] = useState('');
@@ -136,12 +137,7 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
   }
 
   return (
-    <div className="batch-form-wrapper">
-      <button type="button" className="batch-form__toggle" onClick={() => setAberto((a) => !a)}>
-        {aberto ? '– Fechar adição em lote' : '+ Adicionar em lote (repetir por várias semanas)'}
-      </button>
-
-      {aberto && (
+    <ToolCard titulo="Adicionar em lote (várias semanas)" Icon={Repeat}>
         <form className="batch-form" onSubmit={gerarLote}>
           <p className="admin-panel__hint">
             Cria vários horários de uma vez, repetindo toda semana dentro do período escolhido,
@@ -230,7 +226,6 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
             {gerando ? 'Gerando horários...' : 'Gerar horários'}
           </button>
         </form>
-      )}
-    </div>
+    </ToolCard>
   );
 }

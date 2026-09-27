@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Agendamento } from '../../types';
-import { Calendar, Phone, Mail } from '../icons';
+import { Ban, Calendar } from '../icons';
 import { formatarDataHora, ordenarPorHorario } from '../../lib/agendamentos';
+import ContatoPaciente from './ContatoPaciente';
+import EmptyState, { Carregando } from './EmptyState';
 
 const rotulo: Record<string, string> = {
   recusado: 'Recusado',
   cancelado: 'Cancelado',
 };
+
+function formatarDiaCurto(data?: string) {
+  if (!data) return '';
+  const [ano, mes, dia] = data.split('-').map(Number);
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
+    .format(new Date(ano, mes - 1, dia))
+    .replace('.', '');
+}
 
 export default function RecusadosList() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
@@ -35,34 +45,36 @@ export default function RecusadosList() {
         canceladas.
       </p>
 
-      {carregando && <p className="scheduling__loading">Carregando...</p>}
+      {carregando && <Carregando>Carregando...</Carregando>}
 
       {!carregando && agendamentos.length === 0 && (
-        <div className="empty-state">Nenhum recusado ou cancelado por aqui.</div>
+        <EmptyState Icon={Ban}>Nenhum recusado ou cancelado por aqui.</EmptyState>
       )}
 
-      {!carregando &&
-        agendamentos.map((a) => (
-          <div className="request-card" key={a.id}>
-            <div className="request-card__info">
-              <div className="request-card__name">
-                {a.nome_paciente} <span className={`badge badge-${a.status}`}>{rotulo[a.status]}</span>
+      {!carregando && agendamentos.length > 0 && (
+        <div className="day-group__list">
+          {agendamentos.map((a) => (
+            <article className="request-card" key={a.id}>
+              <div className="request-card__time">
+                {a.horarios_disponiveis?.hora.slice(0, 5) ?? '—'}
+                <small>{formatarDiaCurto(a.horarios_disponiveis?.data)}</small>
               </div>
-              <div className="request-card__meta">
-                <span>
-                  <Calendar size={14} strokeWidth={2} aria-hidden="true" />{' '}
-                  {formatarDataHora(a.horarios_disponiveis?.data, a.horarios_disponiveis?.hora)}
-                </span>
-                <span>
-                  <Phone size={14} strokeWidth={2} aria-hidden="true" /> {a.telefone}
-                </span>
-                <span>
-                  <Mail size={14} strokeWidth={2} aria-hidden="true" /> {a.email}
-                </span>
+              <div className="request-card__info">
+                <div className="request-card__name">
+                  {a.nome_paciente} <span className={`badge badge-${a.status}`}>{rotulo[a.status]}</span>
+                </div>
+                <div className="request-card__meta">
+                  <span>
+                    <Calendar size={14} strokeWidth={2} aria-hidden="true" />{' '}
+                    {formatarDataHora(a.horarios_disponiveis?.data, a.horarios_disponiveis?.hora)}
+                  </span>
+                  <ContatoPaciente telefone={a.telefone} email={a.email} />
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </article>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

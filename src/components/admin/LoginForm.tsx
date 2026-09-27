@@ -23,7 +23,10 @@ export default function LoginForm() {
   return (
     <div className="admin-login">
       <div className="admin-login__card">
-        <div className="admin-login__title">Área administrativa</div>
+        <span className="admin-nav__logo" aria-hidden="true">
+          D
+        </span>
+        <h1 className="admin-login__title">Área administrativa</h1>
         <div className="admin-login__subtitle">Acesso restrito à psicóloga Daniele Walczak.</div>
 
         <form onSubmit={handleSubmit}>
@@ -57,6 +60,10 @@ export default function LoginForm() {
             {carregando ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
+
+        <a href="/" className="admin-login__back">
+          ← Voltar ao site
+        </a>
       </div>
     </div>
   );

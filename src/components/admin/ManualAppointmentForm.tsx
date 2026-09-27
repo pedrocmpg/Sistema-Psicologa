@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
 import DatePicker from './DatePicker';
+import ToolCard from './ToolCard';
+import { CalendarPlus } from '../icons';
 
 interface ManualAppointmentFormProps {
   onCriado: () => void;
 }
 
 export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFormProps) {
-  const [aberto, setAberto] = useState(false);
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [data, setData] = useState('');
@@ -73,12 +74,7 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
   }
 
   return (
-    <div className="batch-form-wrapper">
-      <button type="button" className="batch-form__toggle" onClick={() => setAberto((a) => !a)}>
-        {aberto ? '– Fechar agendamento manual' : '+ Adicionar agendamento manual'}
-      </button>
-
-      {aberto && (
+    <ToolCard titulo="Adicionar agendamento manual" Icon={CalendarPlus}>
         <form className="batch-form" onSubmit={salvar}>
           <p className="admin-panel__hint">
             Para quando o paciente marcar por telefone ou WhatsApp, fora do site. Entra direto
@@ -138,7 +134,6 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
             {salvando ? 'Salvando...' : 'Salvar agendamento'}
           </button>
         </form>
-      )}
-    </div>
+    </ToolCard>
   );
 }

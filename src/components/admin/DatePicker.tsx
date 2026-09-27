@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from '../icons';
+import { Calendar, ChevronLeft, ChevronRight } from '../icons';
 
 interface DatePickerProps {
   value: string;
@@ -35,8 +35,15 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         setAberto(false);
       }
     }
+    function aoTeclar(e: KeyboardEvent) {
+      if (e.key === 'Escape') setAberto(false);
+    }
     document.addEventListener('mousedown', aoClicarFora);
-    return () => document.removeEventListener('mousedown', aoClicarFora);
+    document.addEventListener('keydown', aoTeclar);
+    return () => {
+      document.removeEventListener('mousedown', aoClicarFora);
+      document.removeEventListener('keydown', aoTeclar);
+    };
   }, []);
 
   const primeiroDiaSemana = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth(), 1).getDay();
@@ -67,8 +74,12 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         aria-expanded={aberto}
         aria-haspopup="dialog"
       >
+        <Calendar size={16} strokeWidth={2} aria-hidden="true" />
         {textoTrigger}
       </button>
+
+      {/* no celular o painel vira bottom-sheet; o backdrop fica dentro do container para o clique-fora funcionar */}
+      {aberto && <div className="date-picker__backdrop" onClick={() => setAberto(false)} />}
 
       {aberto && (
         <div className="date-picker__panel" role="dialog" aria-label="Selecionar dia">
@@ -101,12 +112,14 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
               if (!d) return <span key={`vazio-${i}`} />;
               const desabilitado = d < hoje;
               const selecionado = value === paraISO(d);
+              const ehHoje = d.getTime() === hoje.getTime();
               return (
                 <button
                   key={i}
                   type="button"
                   disabled={desabilitado}
-                  className={`date-picker__day ${selecionado ? 'is-selected' : ''}`}
+                  aria-current={ehHoje ? 'date' : undefined}
+                  className={`date-picker__day ${selecionado ? 'is-selected' : ''} ${ehHoje ? 'is-today' : ''}`}
                   onClick={() => selecionar(d)}
                 >
                   {d.getDate()}

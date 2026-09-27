@@ -1,18 +1,16 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { HorarioDisponivel, StatusHorario } from '../../types';
+import { hojeISO, rotuloDia } from '../../lib/date';
+import { CalendarDays, Plus, Trash } from '../icons';
 import DatePicker from './DatePicker';
 import BatchAvailabilityForm from './BatchAvailabilityForm';
-
-function formatarDataLonga(data: string) {
-  const [ano, mes, dia] = data.split('-').map(Number);
-  const d = new Date(ano, mes - 1, dia);
-  return new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(d);
-}
+import ToolCard from './ToolCard';
+import EmptyState, { Carregando } from './EmptyState';
 
 const rotuloStatus: Record<StatusHorario, string> = {
-  disponivel: 'Disponível',
-  reservado: 'Pedido pendente',
+  disponivel: 'Livre',
+  reservado: 'Pendente',
   confirmado: 'Confirmado',
 };
 
@@ -80,6 +78,8 @@ export default function AvailabilityManager() {
     else grupos.push({ data: h.data, itens: [h] });
   }
 
+  const hoje = hojeISO();
+
   return (
     <div className="admin-panel">
       <h2>Agenda de horários</h2>
@@ -90,64 +90,71 @@ export default function AvailabilityManager() {
 
       {erro && <div className="alert alert-error">{erro}</div>}
 
-      <form className="add-slot-form" onSubmit={adicionarHorario}>
-        <div className="field">
-          <label>Dia</label>
-          <DatePicker
-            value={data}
-            onChange={(novaData) => {
-              setData(novaData);
-              setHora('');
-            }}
-          />
-        </div>
+      <div className="admin-tools">
+        <ToolCard titulo="Adicionar um horário" Icon={Plus} inicialmenteAberto>
+          <form className="add-slot-form" onSubmit={adicionarHorario}>
+            <div className="field">
+              <span className="field-label">Dia</span>
+              <DatePicker
+                value={data}
+                onChange={(novaData) => {
+                  setData(novaData);
+                  setHora('');
+                }}
+              />
+            </div>
 
-        {data && (
-          <div className="field">
-            <label htmlFor="nova-hora">Horário</label>
-            <input
-              id="nova-hora"
-              type="time"
-              required
-              autoFocus
-              value={hora}
-              onChange={(e) => setHora(e.target.value)}
-            />
-          </div>
-        )}
+            <div className="field">
+              <label htmlFor="nova-hora">Horário</label>
+              <input
+                id="nova-hora"
+                type="time"
+                required
+                disabled={!data}
+                value={hora}
+                onChange={(e) => setHora(e.target.value)}
+              />
+            </div>
 
-        {data && (
-          <button type="submit" className="btn btn-primary" disabled={salvando || !hora}>
-            {salvando ? 'Adicionando...' : 'Adicionar horário'}
-          </button>
-        )}
-      </form>
+            <button type="submit" className="btn btn-primary" disabled={salvando || !data || !hora}>
+              {salvando ? 'Adicionando...' : 'Adicionar horário'}
+            </button>
+          </form>
+        </ToolCard>
 
-      <BatchAvailabilityForm onAdicionados={carregar} />
+        <BatchAvailabilityForm onAdicionados={carregar} />
+      </div>
 
-      {carregando && <p className="scheduling__loading">Carregando agenda...</p>}
+      {carregando && <Carregando>Carregando agenda...</Carregando>}
 
       {!carregando && grupos.length === 0 && (
-        <div className="empty-state">Nenhum horário cadastrado ainda.</div>
+        <EmptyState Icon={CalendarDays}>Nenhum horário cadastrado ainda.</EmptyState>
       )}
 
       {!carregando &&
         grupos.map((g) => (
-          <div className="admin-slot-group" key={g.data}>
-            <div className="admin-slot-group__date">{formatarDataLonga(g.data)}</div>
-            {g.itens.map((h) => (
-              <div className="admin-slot-row" key={h.id}>
-                <span className="admin-slot-row__time">{h.hora.slice(0, 5)}</span>
-                <span className={`badge badge-${h.status}`}>{rotuloStatus[h.status]}</span>
-                <span className="admin-slot-row__spacer" />
-                {h.status === 'disponivel' && (
-                  <button className="btn btn-danger btn-sm" onClick={() => removerHorario(h.id)}>
-                    Remover
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+          <section className="day-group" key={g.data}>
+            <h3 className={`day-group__title ${g.data === hoje ? 'is-today' : ''}`}>{rotuloDia(g.data)}</h3>
+            <div className="slot-chips">
+              {g.itens.map((h) => (
+                <div className={`slot-chip slot-chip--${h.status}`} key={h.id}>
+                  <span className="slot-chip__time">{h.hora.slice(0, 5)}</span>
+                  <span className={`badge badge-${h.status}`}>{rotuloStatus[h.status]}</span>
+                  {h.status === 'disponivel' && (
+                    <button
+                      type="button"
+                      className="icon-btn"
+                      onClick={() => removerHorario(h.id)}
+                      aria-label={`Remover horário de ${h.hora.slice(0, 5)}`}
+                      title="Remover horário"
+                    >
+                      <Trash size={16} strokeWidth={2} />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
         ))}
     </div>
   );
