@@ -630,8 +630,18 @@ p {
   gap: 28px;
 }
 
+/* Item de grid, por padrão, não encolhe abaixo do tamanho "natural" do conteúdo — e o conteúdo
+   aqui dentro (os cards de dias) é largo de propósito, pensado pra rolar, não pra caber inteiro.
+   Sem isso, o item inteiro se expande pra caber todos os cards sem cortar, e é só depois
+   brutalmente cortado pela borda da janela — a rolagem interna do carrossel nunca chega a atuar,
+   e a seta da direita (posicionada em relação a esse item) acaba calculada bem fora da tela. */
+.scheduling__layout > .reveal {
+  min-width: 0;
+}
+
 .scheduling__days-wrapper {
   position: relative;
+  min-width: 0;
 }
 
 .scheduling__days {
