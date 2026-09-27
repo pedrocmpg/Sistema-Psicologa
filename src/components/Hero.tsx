@@ -6,7 +6,9 @@ export default function Hero() {
       <div className="container hero__inner">
         <div>
           <div className="hero__eyebrow">Psicoterapia individual, de casal e infantil</div>
-          <h1 className="hero__title">Um espaço tranquilo para você se ouvir com mais clareza.</h1>
+          <h1 className="hero__title">
+            Um espaço tranquilo para você se ouvir com mais <em>clareza</em>.
+          </h1>
           <p className="hero__lead">
             Atendimento psicológico com abordagem cognitivo-comportamental, em Bento Gonçalves.
             Um processo conduzido no seu ritmo, com escuta cuidadosa e embasamento técnico.
@@ -21,31 +23,49 @@ export default function Hero() {
           </div>
         </div>
 
+        {/* Para usar uma foto no lugar da arte: troque o <svg> por <img src="/foto.jpg" alt="" /> */}
         <div className="hero__art" aria-hidden="true">
           <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#94b09d" />
-                <stop offset="100%" stopColor="#55705f" />
+              <linearGradient id="hero-fundo" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#a3bcaa" />
+                <stop offset="55%" stopColor="#7c9885" />
+                <stop offset="100%" stopColor="#4d6757" />
               </linearGradient>
+              <radialGradient id="hero-luz" cx="0.8" cy="0.15" r="0.7">
+                <stop offset="0%" stopColor="#f8f4ec" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#f8f4ec" stopOpacity="0" />
+              </radialGradient>
             </defs>
-            <rect width="400" height="500" fill="url(#g1)" />
-            <circle cx="320" cy="80" r="110" fill="#ffffff" opacity="0.07" />
-            <circle cx="60" cy="420" r="150" fill="#ffffff" opacity="0.06" />
+            <rect width="400" height="500" fill="url(#hero-fundo)" />
+            <rect width="400" height="500" fill="url(#hero-luz)" />
+
             <path
-              d="M70 260 C 70 180, 150 130, 220 160 C 290 190, 300 280, 240 320 C 180 360, 90 340, 70 260 Z"
+              className="hero__blob"
+              d="M60 250 C 55 170, 140 115, 220 140 C 300 165, 330 260, 270 320 C 210 380, 70 350, 60 250 Z"
               fill="#ffffff"
-              opacity="0.14"
+              opacity="0.13"
             />
             <path
-              d="M120 340 C 160 320, 220 330, 250 370 C 280 410, 250 460, 190 460 C 130 460, 90 370, 120 340 Z"
+              className="hero__blob hero__blob--2"
+              d="M110 350 C 150 320, 230 325, 265 370 C 300 420, 260 475, 190 470 C 120 465, 75 380, 110 350 Z"
               fill="#ffffff"
-              opacity="0.1"
+              opacity="0.09"
             />
-            <g opacity="0.5" stroke="#ffffff" strokeWidth="1.5" fill="none">
-              <path d="M150 200 q 30 -20 60 0" />
-              <path d="M150 220 q 30 -20 60 0" />
-              <path d="M150 240 q 30 -20 60 0" />
+            <circle className="hero__blob hero__blob--3" cx="320" cy="90" r="95" fill="#ffffff" opacity="0.08" />
+
+            {/* folhas */}
+            <g opacity="0.55" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round">
+              <path d="M300 430 C 300 380, 320 340, 350 310" />
+              <path d="M312 385 C 290 378, 280 360, 284 345 C 300 350, 312 364, 312 385 Z" fill="#ffffff" fillOpacity="0.18" />
+              <path d="M325 352 C 345 340, 352 322, 346 308 C 330 315, 322 333, 325 352 Z" fill="#ffffff" fillOpacity="0.18" />
+            </g>
+
+            {/* ondas suaves: respiração */}
+            <g opacity="0.5" stroke="#ffffff" strokeWidth="1.5" fill="none" strokeLinecap="round">
+              <path d="M140 205 q 40 -22 80 0" />
+              <path d="M140 228 q 40 -22 80 0" opacity="0.75" />
+              <path d="M140 251 q 40 -22 80 0" opacity="0.5" />
             </g>
           </svg>
           <div className="hero__badge">

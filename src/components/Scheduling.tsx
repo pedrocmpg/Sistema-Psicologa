@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { supabase } from '../lib/supabase';
 import type { HorarioDisponivel } from '../types';
 import Reveal from './Reveal';
-import { ChevronLeft, ChevronRight, MessageCircle, Calendar } from './icons';
+import { ChevronLeft, ChevronRight, MessageCircle, Calendar, CalendarDays, ArrowRight, CircleCheck, ShieldCheck } from './icons';
 import { whatsappHref } from '../lib/whatsapp';
+import { hojeISO, somarDias } from '../lib/date';
 
 function formatarHora(hora: string) {
   return hora.slice(0, 5);
@@ -19,6 +20,12 @@ function formatarDataCurta(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
   const d = new Date(ano, mes - 1, dia);
   return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' }).format(d).replace('.', '');
+}
+
+function formatarDataLonga(data: string) {
+  const [ano, mes, dia] = data.split('-').map(Number);
+  const d = new Date(ano, mes - 1, dia);
+  return new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(d);
 }
 
 interface DiaAgrupado {
@@ -40,21 +47,21 @@ export default function Scheduling() {
   const [erroEnvio, setErroEnvio] = useState<string | null>(null);
   const [sucesso, setSucesso] = useState(false);
 
+  const [podeVoltar, setPodeVoltar] = useState(false);
+  const [podeAvancar, setPodeAvancar] = useState(false);
+
   const diasContainerRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   async function carregarHorarios() {
     setCarregando(true);
     setErroCarregamento(null);
-    const hoje = new Date();
-    const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(
-      hoje.getDate()
-    ).padStart(2, '0')}`;
 
     const { data, error } = await supabase
       .from('horarios_disponiveis')
       .select('*')
       .eq('status', 'disponivel')
-      .gte('data', hojeStr)
+      .gte('data', hojeISO())
       .order('data', { ascending: true })
       .order('hora', { ascending: true });
 
@@ -80,14 +87,52 @@ export default function Scheduling() {
     }
   }
 
+  const atualizarSetas = useCallback(() => {
+    const el = diasContainerRef.current;
+    if (!el) return;
+    setPodeVoltar(el.scrollLeft > 4);
+    setPodeAvancar(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  const temDias = dias.length > 0;
+
+  useEffect(() => {
+    const el = diasContainerRef.current;
+    if (!el) return;
+    atualizarSetas();
+    el.addEventListener('scroll', atualizarSetas, { passive: true });
+    const observer = new ResizeObserver(atualizarSetas);
+    observer.observe(el);
+    return () => {
+      el.removeEventListener('scroll', atualizarSetas);
+      observer.disconnect();
+    };
+  }, [temDias, carregando, atualizarSetas]);
+
+  // No celular/tablet o formulário aparece abaixo do carrossel: leva a pessoa até ele.
+  useEffect(() => {
+    if (!selecionado) return;
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [selecionado]);
+
   function rolar(direcao: 1 | -1) {
-    diasContainerRef.current?.scrollBy({ left: direcao * 280, behavior: 'smooth' });
+    const el = diasContainerRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direcao * Math.max(el.clientWidth * 0.8, 200), behavior: 'smooth' });
   }
 
   function selecionarSlot(h: HorarioDisponivel) {
     setSelecionado(h);
     setErroEnvio(null);
     setSucesso(false);
+  }
+
+  function escolherOutro() {
+    setSucesso(false);
+    setSelecionado(null);
+    document.getElementById('calendario-horarios')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   async function enviarPedido(e: FormEvent) {
@@ -129,6 +174,9 @@ export default function Scheduling() {
     setConsentimento(false);
   }
 
+  const hoje = hojeISO();
+  const amanha = somarDias(hoje, 1);
+
   return (
     <section id="agendamento" className="section scheduling">
       <div className="container">
@@ -159,6 +207,7 @@ export default function Scheduling() {
                 </span>
                 <span className="contact-choice__title">Falar direto comigo</span>
                 <span className="contact-choice__desc">Tire dúvidas ou combine os detalhes pelo WhatsApp.</span>
+                <ArrowRight className="contact-choice__arrow" size={18} strokeWidth={2} aria-hidden="true" />
               </a>
 
               <a href="#calendario-horarios" className="contact-choice__card">
@@ -167,147 +216,222 @@ export default function Scheduling() {
                 </span>
                 <span className="contact-choice__title">Agendar meu horário</span>
                 <span className="contact-choice__desc">Veja os horários livres e escolha o seu, agora mesmo.</span>
+                <ArrowRight className="contact-choice__arrow" size={18} strokeWidth={2} aria-hidden="true" />
               </a>
             </div>
           </div>
         </Reveal>
 
-        <div className="scheduling__layout" id="calendario-horarios">
-          <Reveal>
-            {carregando && <p className="scheduling__loading">Carregando horários disponíveis...</p>}
+        <div
+          className={`scheduling__layout ${temDias || sucesso ? 'scheduling__layout--split' : ''}`}
+          id="calendario-horarios"
+        >
+          <div>
+            <div className="scheduling__calendar-head">
+              <h3 className="scheduling__calendar-title">Horários livres</h3>
+              {temDias && !carregando && (
+                <span className="scheduling__calendar-hint">
+                  {dias.length} {dias.length === 1 ? 'dia disponível' : 'dias disponíveis'}
+                </span>
+              )}
+            </div>
+
+            {carregando && (
+              <div className="scheduling__days" aria-busy="true" aria-label="Carregando horários disponíveis">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div className="day-card day-card--skeleton" key={i}>
+                    <span className="skeleton" />
+                    <span className="skeleton" />
+                    <span className="skeleton" />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {!carregando && erroCarregamento && <div className="alert alert-error">{erroCarregamento}</div>}
 
-            {!carregando && !erroCarregamento && dias.length === 0 && (
+            {!carregando && !erroCarregamento && !temDias && (
               <div className="scheduling__empty">
-                No momento não há horários disponíveis. Entre em contato pelo WhatsApp (54) 99712-2959
+                No momento não há horários disponíveis. Entre em contato pelo{' '}
+                <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                  WhatsApp (54) 99712-2959
+                </a>{' '}
                 para verificar a agenda.
               </div>
             )}
 
-            {!carregando && dias.length > 0 && (
-              <div className="scheduling__days-wrapper">
-                <button
-                  type="button"
-                  className="scheduling__scroll-btn scheduling__scroll-btn--left"
-                  onClick={() => rolar(-1)}
-                  aria-label="Ver dias anteriores"
-                >
-                  <ChevronLeft size={22} strokeWidth={3} />
-                </button>
+            {!carregando && temDias && (
+              <div
+                className={`scheduling__days-wrapper ${podeVoltar ? 'can-left' : ''} ${podeAvancar ? 'can-right' : ''}`}
+              >
+                {(podeVoltar || podeAvancar) && (
+                  <button
+                    type="button"
+                    className="scheduling__scroll-btn scheduling__scroll-btn--left"
+                    onClick={() => rolar(-1)}
+                    disabled={!podeVoltar}
+                    aria-label="Ver dias anteriores"
+                  >
+                    <ChevronLeft size={22} strokeWidth={3} />
+                  </button>
+                )}
 
                 <div className="scheduling__days" ref={diasContainerRef}>
-                  {dias.map((dia) => (
-                    <div className="day-card" key={dia.data}>
-                      <div className="day-card__date">{formatarDataCurta(dia.data)}</div>
-                      <div className="day-card__weekday">{formatarDiaSemana(dia.data)}</div>
-                      <div className="day-card__slots">
-                        {dia.horarios.map((h) => (
-                          <button
-                            key={h.id}
-                            type="button"
-                            className={`slot-btn ${selecionado?.id === h.id ? 'is-selected' : ''}`}
-                            onClick={() => selecionarSlot(h)}
-                          >
-                            {formatarHora(h.hora)}
-                          </button>
-                        ))}
+                  {dias.map((dia) => {
+                    const temSelecionado = dia.horarios.some((h) => h.id === selecionado?.id);
+                    const tag = dia.data === hoje ? 'Hoje' : dia.data === amanha ? 'Amanhã' : null;
+                    return (
+                      <div
+                        className={`day-card ${temSelecionado ? 'has-selected' : ''}`}
+                        key={dia.data}
+                        role="group"
+                        aria-label={formatarDataLonga(dia.data)}
+                      >
+                        <div className="day-card__head">
+                          <div>
+                            <div className="day-card__date">{formatarDataCurta(dia.data)}</div>
+                            <div className="day-card__weekday">{formatarDiaSemana(dia.data)}</div>
+                          </div>
+                          {tag && <span className="day-card__tag">{tag}</span>}
+                        </div>
+                        <div className="day-card__slots">
+                          {dia.horarios.map((h) => (
+                            <button
+                              key={h.id}
+                              type="button"
+                              className={`slot-btn ${selecionado?.id === h.id ? 'is-selected' : ''}`}
+                              aria-pressed={selecionado?.id === h.id}
+                              onClick={() => selecionarSlot(h)}
+                            >
+                              {formatarHora(h.hora)}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
-                <button
-                  type="button"
-                  className="scheduling__scroll-btn scheduling__scroll-btn--right"
-                  onClick={() => rolar(1)}
-                  aria-label="Ver mais dias"
-                >
-                  <ChevronRight size={22} strokeWidth={3} />
-                </button>
+                {(podeVoltar || podeAvancar) && (
+                  <button
+                    type="button"
+                    className="scheduling__scroll-btn scheduling__scroll-btn--right"
+                    onClick={() => rolar(1)}
+                    disabled={!podeAvancar}
+                    aria-label="Ver mais dias"
+                  >
+                    <ChevronRight size={22} strokeWidth={3} />
+                  </button>
+                )}
               </div>
             )}
-          </Reveal>
+          </div>
 
-          {selecionado && !sucesso && (
-            <Reveal>
-              <form className="booking-panel" onSubmit={enviarPedido}>
-                <div className="booking-panel__slot">
-                  <span>
-                    {formatarDataCurta(selecionado.data)} ({formatarDiaSemana(selecionado.data)}) às{' '}
-                    {formatarHora(selecionado.hora)}
-                  </span>
-                  <button type="button" onClick={() => setSelecionado(null)}>
-                    trocar
+          {(temDias || sucesso) && (
+            <div className="scheduling__aside">
+              {sucesso ? (
+                <div className="form-success fade-in" role="status">
+                  <div className="form-success__icon" aria-hidden="true">
+                    <CircleCheck size={28} strokeWidth={2} />
+                  </div>
+                  <strong>Seu pedido foi enviado!</strong>
+                  <p>A psicóloga vai confirmar em breve pelo telefone ou WhatsApp informado.</p>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={escolherOutro}>
+                    Escolher outro horário
                   </button>
                 </div>
+              ) : selecionado ? (
+                <form className="booking-panel fade-in" onSubmit={enviarPedido} ref={formRef} key={selecionado.id}>
+                  <h3 className="booking-panel__title">Seus dados</h3>
 
-                {erroEnvio && <div className="form-error">{erroEnvio}</div>}
+                  <div className="booking-panel__slot">
+                    <span className="booking-panel__slot-icon" aria-hidden="true">
+                      <CalendarDays size={20} strokeWidth={2} />
+                    </span>
+                    <span className="booking-panel__slot-text">
+                      <strong>{formatarDataLonga(selecionado.data)}</strong>
+                      <span>às {formatarHora(selecionado.hora)}</span>
+                    </span>
+                    <button type="button" className="link-btn" onClick={() => setSelecionado(null)}>
+                      trocar
+                    </button>
+                  </div>
 
-                <div className="field">
-                  <label htmlFor="nome">Nome completo</label>
-                  <input
-                    id="nome"
-                    type="text"
-                    required
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                    placeholder="Seu nome completo"
-                  />
+                  {erroEnvio && (
+                    <div className="form-error" role="alert">
+                      {erroEnvio}
+                    </div>
+                  )}
+
+                  <div className="field">
+                    <label htmlFor="nome">Nome completo</label>
+                    <input
+                      id="nome"
+                      type="text"
+                      required
+                      autoComplete="name"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      placeholder="Seu nome completo"
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="telefone">Telefone (WhatsApp)</label>
+                    <input
+                      id="telefone"
+                      type="tel"
+                      inputMode="tel"
+                      required
+                      autoComplete="tel"
+                      value={telefone}
+                      onChange={(e) => setTelefone(e.target.value)}
+                      placeholder="(54) 99999-9999"
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="email">E-mail</label>
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="voce@email.com"
+                    />
+                  </div>
+
+                  <div className="privacy-note">
+                    <ShieldCheck size={16} strokeWidth={2} aria-hidden="true" />
+                    <span>
+                      Usamos seus dados apenas para confirmar sua consulta. Não compartilhamos com
+                      terceiros.
+                    </span>
+                  </div>
+
+                  <label className="field-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={consentimento}
+                      onChange={(e) => setConsentimento(e.target.checked)}
+                    />
+                    Concordo em ser contatado(a) pela psicóloga pelos dados informados acima.
+                  </label>
+
+                  <button type="submit" className="btn btn-primary btn-block" disabled={enviando}>
+                    {enviando ? 'Enviando...' : 'Enviar pedido de agendamento'}
+                  </button>
+                </form>
+              ) : (
+                <div className="booking-placeholder">
+                  <CalendarDays size={32} strokeWidth={1.6} aria-hidden="true" />
+                  <strong>Escolha um horário</strong>
+                  Selecione um dia e horário ao lado para preencher seus dados.
                 </div>
-
-                <div className="field">
-                  <label htmlFor="telefone">Telefone (WhatsApp)</label>
-                  <input
-                    id="telefone"
-                    type="tel"
-                    required
-                    value={telefone}
-                    onChange={(e) => setTelefone(e.target.value)}
-                    placeholder="(54) 99999-9999"
-                  />
-                </div>
-
-                <div className="field">
-                  <label htmlFor="email">E-mail</label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@email.com"
-                  />
-                </div>
-
-                <div className="privacy-note">
-                  Usamos seus dados apenas para confirmar sua consulta. Não compartilhamos com
-                  terceiros.
-                </div>
-
-                <label className="field-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={consentimento}
-                    onChange={(e) => setConsentimento(e.target.checked)}
-                  />
-                  Concordo em ser contatado(a) pela psicóloga pelos dados informados acima.
-                </label>
-
-                <button type="submit" className="btn btn-primary btn-block" disabled={enviando}>
-                  {enviando ? 'Enviando...' : 'Enviar pedido de agendamento'}
-                </button>
-              </form>
-            </Reveal>
-          )}
-
-          {sucesso && (
-            <Reveal>
-              <div className="form-success">
-                <strong>Seu pedido foi enviado!</strong>
-                A psicóloga vai confirmar em breve pelo telefone ou WhatsApp informado.
-              </div>
-            </Reveal>
+              )}
+            </div>
           )}
         </div>
       </div>

@@ -1,5 +1,13 @@
 import Reveal from './Reveal';
-import { Compass, Users, GraduationCap } from './icons';
+import { Compass, Users, GraduationCap, UserRound, BadgeCheck, Building, Clock } from './icons';
+
+const dados = [
+  { Icon: UserRound, rotulo: 'Profissional', valor: 'Daniele Walczak' },
+  { Icon: BadgeCheck, rotulo: 'Registro', valor: 'CRP 07/36785' },
+  { Icon: Building, rotulo: 'Atendimento', valor: 'Presencial' },
+  { Icon: Users, rotulo: 'Público', valor: 'Adulto, infantil e casal' },
+  { Icon: Clock, rotulo: 'Horário', valor: 'Seg. a sex., 9h–19h30' },
+];
 
 const pontos = [
   {
@@ -38,7 +46,7 @@ export default function About() {
               {pontos.map((p) => (
                 <li key={p.title}>
                   <span className="about__list-icon" aria-hidden="true">
-                    <p.Icon size={18} strokeWidth={2} />
+                    <p.Icon size={20} strokeWidth={1.8} />
                   </span>
                   <div>
                     <div className="about__list-title">{p.title}</div>
@@ -52,26 +60,15 @@ export default function About() {
           <Reveal delay={120}>
             <div className="about__card">
               <dl>
-                <div className="about__card-row">
-                  <dt>Profissional</dt>
-                  <dd>Daniele Walczak</dd>
-                </div>
-                <div className="about__card-row">
-                  <dt>Registro</dt>
-                  <dd>CRP 07/36785</dd>
-                </div>
-                <div className="about__card-row">
-                  <dt>Atendimento</dt>
-                  <dd>Presencial</dd>
-                </div>
-                <div className="about__card-row">
-                  <dt>Público</dt>
-                  <dd>Adulto, infantil e casal</dd>
-                </div>
-                <div className="about__card-row">
-                  <dt>Horário</dt>
-                  <dd>Seg. a sex., 9h–19h30</dd>
-                </div>
+                {dados.map((d) => (
+                  <div className="about__card-row" key={d.rotulo}>
+                    <dt>
+                      <d.Icon size={16} strokeWidth={2} aria-hidden="true" />
+                      {d.rotulo}
+                    </dt>
+                    <dd>{d.valor}</dd>
+                  </div>
+                ))}
               </dl>
             </div>
           </Reveal>

@@ -16,3 +16,11 @@ export function somarDias(iso: string, dias: number): string {
   d.setDate(d.getDate() + dias);
   return paraISO(d);
 }
+
+/** "Hoje", "Amanhã" ou algo como "quarta-feira, 02 de outubro". */
+export function rotuloDia(iso: string): string {
+  const hoje = hojeISO();
+  if (iso === hoje) return 'Hoje';
+  if (iso === somarDias(hoje, 1)) return 'Amanhã';
+  return new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(deISO(iso));
+}

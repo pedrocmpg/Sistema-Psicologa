@@ -16,3 +16,20 @@ export function ordenarPorHorario(lista: Agendamento[]): Agendamento[] {
     return chaveA.localeCompare(chaveB);
   });
 }
+
+export interface GrupoPorDia<T> {
+  data: string;
+  itens: T[];
+}
+
+/** Agrupa (mantendo a ordem) pelo dia do horário vinculado. Sem horário vinculado vai para o grupo ''. */
+export function agruparPorDia(lista: Agendamento[]): GrupoPorDia<Agendamento>[] {
+  const grupos: GrupoPorDia<Agendamento>[] = [];
+  for (const a of lista) {
+    const data = a.horarios_disponiveis?.data ?? '';
+    const grupo = grupos.find((g) => g.data === data);
+    if (grupo) grupo.itens.push(a);
+    else grupos.push({ data, itens: [a] });
+  }
+  return grupos;
+}
