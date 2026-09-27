@@ -138,15 +138,15 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
       {aberto && (
         <form className="batch-form" onSubmit={gerarLote}>
           <p className="admin-panel__hint">
-            Escolha os dias da semana, a faixa de horário e até quando repetir — os horários são
-            gerados automaticamente a partir de hoje, pulando qualquer um que já exista.
+            Cria vários horários de uma vez, repetindo toda semana. Os horários são gerados a
+            partir de hoje, pulando qualquer um que já exista.
           </p>
 
           {erro && <div className="alert alert-error">{erro}</div>}
           {resultado && <div className="alert alert-success">{resultado}</div>}
 
           <div className="field">
-            <label>Dias da semana</label>
+            <label>1. Em quais dias da semana? (clique para marcar um ou mais)</label>
             <div className="weekday-picker">
               {DIAS_SEMANA.map((d) => (
                 <button
@@ -154,16 +154,20 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
                   key={d.valor}
                   className={`weekday-picker__day ${diasSelecionados.includes(d.valor) ? 'is-selected' : ''}`}
                   onClick={() => alternarDia(d.valor)}
+                  aria-pressed={diasSelecionados.includes(d.valor)}
                 >
                   {d.rotulo}
                 </button>
               ))}
             </div>
+            {diasSelecionados.length === 0 && (
+              <p className="batch-form__field-hint">Nenhum dia marcado ainda — clique em um ou mais acima.</p>
+            )}
           </div>
 
           <div className="batch-form__row">
             <div className="field">
-              <label htmlFor="lote-hora-inicio">Das</label>
+              <label htmlFor="lote-hora-inicio">2. Das</label>
               <input
                 id="lote-hora-inicio"
                 type="time"
@@ -173,7 +177,7 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
               />
             </div>
             <div className="field">
-              <label htmlFor="lote-hora-fim">Às</label>
+              <label htmlFor="lote-hora-fim">até</label>
               <input
                 id="lote-hora-fim"
                 type="time"
@@ -183,7 +187,7 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
               />
             </div>
             <div className="field">
-              <label htmlFor="lote-intervalo">Intervalo entre consultas</label>
+              <label htmlFor="lote-intervalo">com intervalo de</label>
               <select
                 id="lote-intervalo"
                 value={intervalo}
@@ -199,8 +203,12 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
           </div>
 
           <div className="field">
-            <label>Repetir até</label>
+            <label>3. Repetir toda semana, nesses dias, até quando? (data final)</label>
             <DatePicker value={dataFinal} onChange={setDataFinal} />
+            <p className="batch-form__field-hint">
+              Essa é só a data em que a recorrência para — não é onde você escolhe os dias, isso é
+              feito no passo 1 acima.
+            </p>
           </div>
 
           <button type="submit" className="btn btn-primary" disabled={gerando}>
