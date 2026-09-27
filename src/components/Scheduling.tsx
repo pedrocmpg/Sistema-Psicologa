@@ -41,11 +41,6 @@ export default function Scheduling() {
   const [sucesso, setSucesso] = useState(false);
 
   const diasContainerRef = useRef<HTMLDivElement>(null);
-  // Começam visíveis por padrão (otimista) — é corrigido assim que dá pra medir o container.
-  // Prefere mostrar a mais a esconder: se a medição falhar por algum motivo, a seta continua
-  // visível (clicar nela sem ter pra onde rolar não faz mal nenhum) em vez de sumir de vez.
-  const [podeRolarEsquerda, setPodeRolarEsquerda] = useState(true);
-  const [podeRolarDireita, setPodeRolarDireita] = useState(true);
 
   async function carregarHorarios() {
     setCarregando(true);
@@ -84,23 +79,6 @@ export default function Scheduling() {
       dias.push({ data: h.data, horarios: [h] });
     }
   }
-
-  function atualizarSetas() {
-    const el = diasContainerRef.current;
-    if (!el) return;
-    setPodeRolarEsquerda(el.scrollLeft > 4);
-    setPodeRolarDireita(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-  }
-
-  useEffect(() => {
-    // requestAnimationFrame garante que o layout já assentou antes de medir scrollWidth/clientWidth
-    const id = requestAnimationFrame(atualizarSetas);
-    window.addEventListener('resize', atualizarSetas);
-    return () => {
-      cancelAnimationFrame(id);
-      window.removeEventListener('resize', atualizarSetas);
-    };
-  }, [dias.length]);
 
   function rolar(direcao: 1 | -1) {
     diasContainerRef.current?.scrollBy({ left: direcao * 280, behavior: 'smooth' });
@@ -213,13 +191,12 @@ export default function Scheduling() {
                   type="button"
                   className="scheduling__scroll-btn scheduling__scroll-btn--left"
                   onClick={() => rolar(-1)}
-                  disabled={!podeRolarEsquerda}
                   aria-label="Ver dias anteriores"
                 >
-                  <ChevronLeft size={20} strokeWidth={2.5} />
+                  <ChevronLeft size={22} strokeWidth={3} />
                 </button>
 
-                <div className="scheduling__days" ref={diasContainerRef} onScroll={atualizarSetas}>
+                <div className="scheduling__days" ref={diasContainerRef}>
                   {dias.map((dia) => (
                     <div className="day-card" key={dia.data}>
                       <div className="day-card__date">{formatarDataCurta(dia.data)}</div>
@@ -244,10 +221,9 @@ export default function Scheduling() {
                   type="button"
                   className="scheduling__scroll-btn scheduling__scroll-btn--right"
                   onClick={() => rolar(1)}
-                  disabled={!podeRolarDireita}
                   aria-label="Ver mais dias"
                 >
-                  <ChevronRight size={20} strokeWidth={2.5} />
+                  <ChevronRight size={22} strokeWidth={3} />
                 </button>
               </div>
             )}
