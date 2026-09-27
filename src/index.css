@@ -865,6 +865,16 @@ p {
   background: var(--color-beige);
 }
 
+/* Mesmo problema do botão "Agendar horário": navegador/tema do SO reescrevendo cores de
+   elementos com fundo sólido e deixando texto/borda ilegíveis (ou parecendo "sumir"). Blinda
+   todo campo e botão custom do painel admin, não só o .btn-primary. */
+.admin-shell button,
+.admin-shell input,
+.admin-shell select,
+.admin-shell .date-picker__panel {
+  forced-color-adjust: none;
+}
+
 .admin-topbar {
   background: var(--color-white);
   border-bottom: 1px solid var(--color-border);
@@ -1114,7 +1124,9 @@ p {
   padding: 11px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
-  background: var(--color-white);
+  /* background-image (não background-color sólida), mesmo truque do .btn-primary:
+     navegadores que recolorem automaticamente costumam poupar elementos com background-image. */
+  background-image: linear-gradient(var(--color-white), var(--color-white));
   font-size: 0.95rem;
   font-family: inherit;
   color: var(--color-ink);
