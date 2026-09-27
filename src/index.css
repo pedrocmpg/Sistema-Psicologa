@@ -562,12 +562,53 @@ p {
   gap: 28px;
 }
 
+.scheduling__days-wrapper {
+  position: relative;
+}
+
 .scheduling__days {
   display: flex;
   gap: 16px;
   overflow-x: auto;
   padding-bottom: 12px;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
+}
+
+.scheduling__scroll-btn {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(43, 51, 47, 0.55);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+  forced-color-adjust: none;
+}
+
+.scheduling__scroll-btn:hover:not(:disabled) {
+  background: rgba(43, 51, 47, 0.8);
+}
+
+.scheduling__scroll-btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scheduling__scroll-btn--left {
+  left: 4px;
+}
+
+.scheduling__scroll-btn--right {
+  right: 4px;
 }
 
 .day-card {

@@ -1,7 +1,8 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { supabase } from '../lib/supabase';
 import type { HorarioDisponivel } from '../types';
 import Reveal from './Reveal';
+import { ChevronLeft, ChevronRight } from './icons';
 
 function formatarHora(hora: string) {
   return hora.slice(0, 5);
@@ -37,6 +38,10 @@ export default function Scheduling() {
   const [enviando, setEnviando] = useState(false);
   const [erroEnvio, setErroEnvio] = useState<string | null>(null);
   const [sucesso, setSucesso] = useState(false);
+
+  const diasContainerRef = useRef<HTMLDivElement>(null);
+  const [podeRolarEsquerda, setPodeRolarEsquerda] = useState(false);
+  const [podeRolarDireita, setPodeRolarDireita] = useState(false);
 
   async function carregarHorarios() {
     setCarregando(true);
@@ -74,6 +79,21 @@ export default function Scheduling() {
     } else {
       dias.push({ data: h.data, horarios: [h] });
     }
+  }
+
+  function atualizarSetas() {
+    const el = diasContainerRef.current;
+    if (!el) return;
+    setPodeRolarEsquerda(el.scrollLeft > 4);
+    setPodeRolarDireita(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  }
+
+  useEffect(() => {
+    atualizarSetas();
+  }, [dias.length]);
+
+  function rolar(direcao: 1 | -1) {
+    diasContainerRef.current?.scrollBy({ left: direcao * 280, behavior: 'smooth' });
   }
 
   function selecionarSlot(h: HorarioDisponivel) {
@@ -147,25 +167,47 @@ export default function Scheduling() {
             )}
 
             {!carregando && dias.length > 0 && (
-              <div className="scheduling__days">
-                {dias.map((dia) => (
-                  <div className="day-card" key={dia.data}>
-                    <div className="day-card__date">{formatarDataCurta(dia.data)}</div>
-                    <div className="day-card__weekday">{formatarDiaSemana(dia.data)}</div>
-                    <div className="day-card__slots">
-                      {dia.horarios.map((h) => (
-                        <button
-                          key={h.id}
-                          type="button"
-                          className={`slot-btn ${selecionado?.id === h.id ? 'is-selected' : ''}`}
-                          onClick={() => selecionarSlot(h)}
-                        >
-                          {formatarHora(h.hora)}
-                        </button>
-                      ))}
+              <div className="scheduling__days-wrapper">
+                <button
+                  type="button"
+                  className="scheduling__scroll-btn scheduling__scroll-btn--left"
+                  onClick={() => rolar(-1)}
+                  disabled={!podeRolarEsquerda}
+                  aria-label="Ver dias anteriores"
+                >
+                  <ChevronLeft size={20} strokeWidth={2.5} />
+                </button>
+
+                <div className="scheduling__days" ref={diasContainerRef} onScroll={atualizarSetas}>
+                  {dias.map((dia) => (
+                    <div className="day-card" key={dia.data}>
+                      <div className="day-card__date">{formatarDataCurta(dia.data)}</div>
+                      <div className="day-card__weekday">{formatarDiaSemana(dia.data)}</div>
+                      <div className="day-card__slots">
+                        {dia.horarios.map((h) => (
+                          <button
+                            key={h.id}
+                            type="button"
+                            className={`slot-btn ${selecionado?.id === h.id ? 'is-selected' : ''}`}
+                            onClick={() => selecionarSlot(h)}
+                          >
+                            {formatarHora(h.hora)}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="scheduling__scroll-btn scheduling__scroll-btn--right"
+                  onClick={() => rolar(1)}
+                  disabled={!podeRolarDireita}
+                  aria-label="Ver mais dias"
+                >
+                  <ChevronRight size={20} strokeWidth={2.5} />
+                </button>
               </div>
             )}
           </Reveal>
