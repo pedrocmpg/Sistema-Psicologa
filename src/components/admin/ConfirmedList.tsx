@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Agendamento } from '../../types';
+import { Calendar, Phone, Mail } from '../icons';
 
 function formatarDataHora(data?: string, hora?: string) {
   if (!data || !hora) return '—';
@@ -46,9 +47,16 @@ export default function ConfirmedList() {
             <div className="request-card__info">
               <div className="request-card__name">{a.nome_paciente}</div>
               <div className="request-card__meta">
-                <span>📅 {formatarDataHora(a.horarios_disponiveis?.data, a.horarios_disponiveis?.hora)}</span>
-                <span>📞 {a.telefone}</span>
-                <span>✉️ {a.email}</span>
+                <span>
+                  <Calendar size={14} strokeWidth={2} aria-hidden="true" />{' '}
+                  {formatarDataHora(a.horarios_disponiveis?.data, a.horarios_disponiveis?.hora)}
+                </span>
+                <span>
+                  <Phone size={14} strokeWidth={2} aria-hidden="true" /> {a.telefone}
+                </span>
+                <span>
+                  <Mail size={14} strokeWidth={2} aria-hidden="true" /> {a.email}
+                </span>
               </div>
             </div>
           </div>

@@ -1,18 +1,19 @@
 import Reveal from './Reveal';
+import { Compass, Users, GraduationCap } from './icons';
 
 const pontos = [
   {
-    icon: '🧭',
+    Icon: Compass,
     title: 'Abordagem cognitivo-comportamental (TCC)',
     desc: 'Terapia estruturada, com objetivos claros e técnicas baseadas em evidências para lidar com pensamentos, emoções e comportamentos.',
   },
   {
-    icon: '🧑‍🤝‍🧑',
+    Icon: Users,
     title: 'Adultos, crianças e casais',
     desc: 'Atendimento individual para adultos e crianças, além de psicoterapia de casal, com linguagem e recursos adequados a cada fase da vida.',
   },
   {
-    icon: '🎓',
+    Icon: GraduationCap,
     title: 'Formação e atualização contínua',
     desc: 'Psicóloga clínica (CRP 07/36785), com formação em Terapia Cognitivo-Comportamental e atualização constante na área.',
   },
@@ -37,7 +38,7 @@ export default function About() {
               {pontos.map((p) => (
                 <li key={p.title}>
                   <span className="about__list-icon" aria-hidden="true">
-                    {p.icon}
+                    <p.Icon size={18} strokeWidth={2} />
                   </span>
                   <div>
                     <div className="about__list-title">{p.title}</div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Agendamento } from '../../types';
+import { Calendar, Phone, Mail } from '../icons';
 
 function formatarDataHora(data?: string, hora?: string) {
   if (!data || !hora) return '—';
@@ -78,9 +79,16 @@ export default function PendingRequests() {
             <div className="request-card__info">
               <div className="request-card__name">{p.nome_paciente}</div>
               <div className="request-card__meta">
-                <span>📅 {formatarDataHora(p.horarios_disponiveis?.data, p.horarios_disponiveis?.hora)}</span>
-                <span>📞 {p.telefone}</span>
-                <span>✉️ {p.email}</span>
+                <span>
+                  <Calendar size={14} strokeWidth={2} aria-hidden="true" />{' '}
+                  {formatarDataHora(p.horarios_disponiveis?.data, p.horarios_disponiveis?.hora)}
+                </span>
+                <span>
+                  <Phone size={14} strokeWidth={2} aria-hidden="true" /> {p.telefone}
+                </span>
+                <span>
+                  <Mail size={14} strokeWidth={2} aria-hidden="true" /> {p.email}
+                </span>
               </div>
             </div>
             <div className="request-card__actions">

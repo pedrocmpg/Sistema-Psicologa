@@ -2,6 +2,7 @@
    Design tokens
    ========================================================= */
 :root {
+  color-scheme: light;
   --color-sage: #7c9885;
   --color-sage-dark: #55705f;
   --color-sage-light: #e7eee8;
@@ -360,8 +361,9 @@ p {
 
 .hero__badge-stars {
   color: #c7982f;
-  font-size: 1rem;
-  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .hero__badge-text {
@@ -1034,6 +1036,17 @@ p {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+.request-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.request-card__meta svg {
+  flex: none;
+  color: var(--color-sage-dark);
 }
 
 .request-card__actions {

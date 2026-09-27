@@ -1,4 +1,5 @@
 import Reveal from './Reveal';
+import { MapPin, Phone, Clock } from './icons';
 
 const ENDERECO = 'R. Dr. José Mário Mônaco, 227, sala 508, Centro, Bento Gonçalves, RS';
 const MAPS_QUERY = encodeURIComponent(ENDERECO);
@@ -17,7 +18,7 @@ export default function ContactSection() {
             <ul className="contact__list">
               <li>
                 <span className="contact__list-icon" aria-hidden="true">
-                  📍
+                  <MapPin size={18} strokeWidth={2} />
                 </span>
                 <div>
                   <div className="contact__list-title">Endereço</div>
@@ -26,7 +27,7 @@ export default function ContactSection() {
               </li>
               <li>
                 <span className="contact__list-icon" aria-hidden="true">
-                  📞
+                  <Phone size={18} strokeWidth={2} />
                 </span>
                 <div>
                   <div className="contact__list-title">Telefone / WhatsApp</div>
@@ -35,7 +36,7 @@ export default function ContactSection() {
               </li>
               <li>
                 <span className="contact__list-icon" aria-hidden="true">
-                  🕘
+                  <Clock size={18} strokeWidth={2} />
                 </span>
                 <div>
                   <div className="contact__list-title">Horário de atendimento</div>

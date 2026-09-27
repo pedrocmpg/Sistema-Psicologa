@@ -1,3 +1,5 @@
+import { Star } from './icons';
+
 export default function Hero() {
   return (
     <section id="topo" className="hero">
@@ -47,7 +49,11 @@ export default function Hero() {
             </g>
           </svg>
           <div className="hero__badge">
-            <span className="hero__badge-stars">★★★★★</span>
+            <span className="hero__badge-stars" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} size={14} fill="currentColor" strokeWidth={0} />
+              ))}
+            </span>
             <span className="hero__badge-text">
               <strong>5,0</strong> de avaliação no Google (33 avaliações)
             </span>
