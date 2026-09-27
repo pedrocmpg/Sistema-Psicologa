@@ -33,6 +33,7 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
   const [horaInicio, setHoraInicio] = useState('');
   const [horaFim, setHoraFim] = useState('');
   const [intervalo, setIntervalo] = useState(60);
+  const [dataInicial, setDataInicial] = useState(hojeISO());
   const [dataFinal, setDataFinal] = useState('');
   const [gerando, setGerando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -56,20 +57,24 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
       setErro('O horário final precisa ser depois do horário inicial.');
       return;
     }
-    if (!dataFinal) {
-      setErro('Escolha até quando repetir.');
+    if (!dataInicial || !dataFinal) {
+      setErro('Escolha a data inicial e a data final da recorrência.');
       return;
     }
 
     const hoje = hojeISO();
-    if (dataFinal < hoje) {
-      setErro('A data final precisa ser hoje ou no futuro.');
+    if (dataInicial < hoje) {
+      setErro('A data inicial precisa ser hoje ou no futuro.');
+      return;
+    }
+    if (dataFinal < dataInicial) {
+      setErro('A data final precisa ser igual ou depois da data inicial.');
       return;
     }
 
     const gerados = gerarHorariosLote({
       diasSemana: diasSelecionados,
-      dataInicial: hoje,
+      dataInicial,
       dataFinal,
       horaInicio,
       horaFim,
@@ -86,7 +91,7 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
     const { data: existentes, error: erroConsulta } = await supabase
       .from('horarios_disponiveis')
       .select('data, hora')
-      .gte('data', hoje)
+      .gte('data', dataInicial)
       .lte('data', dataFinal);
 
     if (erroConsulta) {
@@ -124,6 +129,7 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
     setDiasSelecionados([]);
     setHoraInicio('');
     setHoraFim('');
+    setDataInicial(hojeISO());
     setDataFinal('');
     setIntervalo(60);
     onAdicionados();
@@ -138,8 +144,8 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
       {aberto && (
         <form className="batch-form" onSubmit={gerarLote}>
           <p className="admin-panel__hint">
-            Cria vários horários de uma vez, repetindo toda semana. Os horários são gerados a
-            partir de hoje, pulando qualquer um que já exista.
+            Cria vários horários de uma vez, repetindo toda semana dentro do período escolhido,
+            pulando qualquer um que já exista.
           </p>
 
           {erro && <div className="alert alert-error">{erro}</div>}
@@ -203,11 +209,20 @@ export default function BatchAvailabilityForm({ onAdicionados }: BatchAvailabili
           </div>
 
           <div className="field">
-            <label>3. Repetir toda semana, nesses dias, até quando? (data final)</label>
-            <DatePicker value={dataFinal} onChange={setDataFinal} />
+            <label>3. Repetir toda semana, nesses dias, de quando até quando?</label>
+            <div className="batch-form__row">
+              <div className="field">
+                <label>De</label>
+                <DatePicker value={dataInicial} onChange={setDataInicial} />
+              </div>
+              <div className="field">
+                <label>Até</label>
+                <DatePicker value={dataFinal} onChange={setDataFinal} />
+              </div>
+            </div>
             <p className="batch-form__field-hint">
-              Essa é só a data em que a recorrência para — não é onde você escolhe os dias, isso é
-              feito no passo 1 acima.
+              "De" e "Até" são só o período da recorrência — os dias da semana dentro desse
+              período são escolhidos no passo 1 acima.
             </p>
           </div>
 
