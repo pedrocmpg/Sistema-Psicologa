@@ -11,4 +11,6 @@ export {
   Calendar,
   Mail,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';

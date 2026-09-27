@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { HorarioDisponivel, StatusHorario } from '../../types';
+import DatePicker from './DatePicker';
 
 function formatarDataLonga(data: string) {
   const [ano, mes, dia] = data.split('-').map(Number);
@@ -56,6 +57,7 @@ export default function AvailabilityManager() {
       return;
     }
 
+    setData('');
     setHora('');
     carregar();
   }
@@ -89,16 +91,35 @@ export default function AvailabilityManager() {
 
       <form className="add-slot-form" onSubmit={adicionarHorario}>
         <div className="field">
-          <label htmlFor="nova-data">Dia</label>
-          <input id="nova-data" type="date" required value={data} onChange={(e) => setData(e.target.value)} />
+          <label>Dia</label>
+          <DatePicker
+            value={data}
+            onChange={(novaData) => {
+              setData(novaData);
+              setHora('');
+            }}
+          />
         </div>
-        <div className="field">
-          <label htmlFor="nova-hora">Horário</label>
-          <input id="nova-hora" type="time" required value={hora} onChange={(e) => setHora(e.target.value)} />
-        </div>
-        <button type="submit" className="btn btn-primary" disabled={salvando}>
-          {salvando ? 'Adicionando...' : 'Adicionar horário'}
-        </button>
+
+        {data && (
+          <div className="field">
+            <label htmlFor="nova-hora">Horário</label>
+            <input
+              id="nova-hora"
+              type="time"
+              required
+              autoFocus
+              value={hora}
+              onChange={(e) => setHora(e.target.value)}
+            />
+          </div>
+        )}
+
+        {data && (
+          <button type="submit" className="btn btn-primary" disabled={salvando || !hora}>
+            {salvando ? 'Adicionando...' : 'Adicionar horário'}
+          </button>
+        )}
       </form>
 
       {carregando && <p className="scheduling__loading">Carregando agenda...</p>}

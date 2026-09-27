@@ -11,7 +11,7 @@
   --color-blue-gray: #64748b;
   --color-blue-gray-light: #eaeef2;
   --color-ink: #2b332f;
-  --color-ink-soft: #5a655f;
+  --color-ink-soft: #0e3f30;
   --color-white: #ffffff;
   --color-border: #e1dccb;
   --color-danger: #a8564a;
@@ -966,6 +966,117 @@ p {
 
 .add-slot-form .field {
   margin-bottom: 0;
+}
+
+/* =========================================================
+   DatePicker (calendário custom do painel admin)
+   ========================================================= */
+.date-picker {
+  position: relative;
+}
+
+.date-picker__trigger {
+  min-width: 220px;
+  text-align: left;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.date-picker__trigger.is-placeholder {
+  color: var(--color-ink-soft);
+}
+
+.date-picker__trigger:focus,
+.date-picker__trigger:hover {
+  outline: 2px solid var(--color-sage);
+  outline-offset: 1px;
+}
+
+.date-picker__panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 280px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 16px;
+}
+
+.date-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.date-picker__header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--color-beige);
+  border-radius: 50%;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.date-picker__header button:hover {
+  background: var(--color-sage-light);
+  color: var(--color-sage-dark);
+}
+
+.date-picker__weekdays,
+.date-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.date-picker__weekdays {
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  font-weight: 600;
+}
+
+.date-picker__day {
+  aspect-ratio: 1;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  font-size: 0.88rem;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.date-picker__day:hover:not(:disabled) {
+  background: var(--color-sage-light);
+}
+
+.date-picker__day:disabled {
+  color: var(--color-border);
+  cursor: not-allowed;
+}
+
+.date-picker__day.is-selected {
+  background: var(--color-sage-dark);
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .admin-slot-group {
