@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { supabase } from '../lib/supabase';
 import type { HorarioDisponivel } from '../types';
 import Reveal from './Reveal';
-import { ChevronLeft, ChevronRight } from './icons';
+import { ChevronLeft, ChevronRight, MessageCircle, Calendar } from './icons';
+import { whatsappHref } from '../lib/whatsapp';
 
 function formatarHora(hora: string) {
   return hora.slice(0, 5);
@@ -162,7 +163,38 @@ export default function Scheduling() {
           </p>
         </Reveal>
 
-        <div className="scheduling__layout">
+        <Reveal>
+          <div className="contact-choice">
+            <p className="contact-choice__intro">
+              Prefere conversar antes? Me chame no WhatsApp. Já sabe o que precisa? Agende direto
+              abaixo.
+            </p>
+            <div className="contact-choice__options">
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-choice__card"
+              >
+                <span className="contact-choice__icon" aria-hidden="true">
+                  <MessageCircle size={22} strokeWidth={2} />
+                </span>
+                <span className="contact-choice__title">Falar direto comigo</span>
+                <span className="contact-choice__desc">Tire dúvidas ou combine os detalhes pelo WhatsApp.</span>
+              </a>
+
+              <a href="#calendario-horarios" className="contact-choice__card">
+                <span className="contact-choice__icon" aria-hidden="true">
+                  <Calendar size={22} strokeWidth={2} />
+                </span>
+                <span className="contact-choice__title">Agendar meu horário</span>
+                <span className="contact-choice__desc">Veja os horários livres e escolha o seu, agora mesmo.</span>
+              </a>
+            </div>
+          </div>
+        </Reveal>
+
+        <div className="scheduling__layout" id="calendario-horarios">
           <Reveal>
             {carregando && <p className="scheduling__loading">Carregando horários disponíveis...</p>}
 

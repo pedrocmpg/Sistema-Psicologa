@@ -14,9 +14,10 @@ export interface Agendamento {
   horario_id: string;
   nome_paciente: string;
   telefone: string;
-  email: string;
+  email: string | null;
   status: StatusAgendamento;
   criado_em: string;
+  recorrencia_id: string | null;
   horarios_disponiveis?: {
     data: string;
     hora: string;

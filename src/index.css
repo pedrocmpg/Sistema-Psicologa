@@ -49,6 +49,7 @@ html {
 #sobre,
 #especialidades,
 #agendamento,
+#calendario-horarios,
 #contato {
   scroll-margin-top: 96px;
 }
@@ -553,6 +554,73 @@ p {
    ========================================================= */
 .scheduling {
   background: var(--color-white);
+}
+
+/* =========================================================
+   Contact choice: WhatsApp direto ou agendar online
+   ========================================================= */
+.contact-choice {
+  margin-top: 32px;
+}
+
+.contact-choice__intro {
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+.contact-choice__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .contact-choice__options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-choice__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-decoration: none;
+  background: var(--color-beige);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 22px 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-choice__card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-sage);
+}
+
+.contact-choice__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--color-sage-light);
+  color: var(--color-sage-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.contact-choice__title {
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--color-ink);
+}
+
+.contact-choice__desc {
+  color: var(--color-ink-soft);
+  font-size: 0.88rem;
 }
 
 .scheduling__layout {
