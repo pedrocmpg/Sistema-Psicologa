@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Menu, X } from './icons';
+import { profissional } from '../config/profissional';
 
 export default function Header() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -31,8 +32,8 @@ export default function Header() {
     <header className={`site-header ${rolou || menuAberto ? 'is-scrolled' : ''}`}>
       <div className="container site-header__inner">
         <a href="#topo" className="site-header__brand" onClick={fecharMenu}>
-          <span className="site-header__name">Daniele Walczak</span>
-          <span className="site-header__crp">Psicóloga Clínica · CRP 07/36785</span>
+          <span className="site-header__name">{profissional.nome}</span>
+          <span className="site-header__crp">{profissional.titulo} · {profissional.crp}</span>
         </a>
         <nav className="site-header__nav" aria-label="Principal">
           <div id="menu-principal" className={`site-header__nav-links ${menuAberto ? 'is-open' : ''}`}>

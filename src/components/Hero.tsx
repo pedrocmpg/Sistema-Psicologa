@@ -1,4 +1,5 @@
 import { Star } from './icons';
+import { profissional } from '../config/profissional';
 
 export default function Hero() {
   return (
@@ -10,7 +11,7 @@ export default function Hero() {
             Um espaço tranquilo para você se ouvir com mais <em>clareza</em>.
           </h1>
           <p className="hero__lead">
-            Atendimento psicológico com abordagem cognitivo-comportamental, em Bento Gonçalves.
+            Atendimento psicológico com abordagem cognitivo-comportamental, em {profissional.cidade}.
             Um processo conduzido no seu ritmo, com escuta cuidadosa e embasamento técnico.
           </p>
           <div className="hero__actions">
@@ -75,7 +76,8 @@ export default function Hero() {
               ))}
             </span>
             <span className="hero__badge-text">
-              <strong>5,0</strong> de avaliação no Google (33 avaliações)
+              <strong>{profissional.avaliacaoGoogle.nota}</strong> de avaliação no Google (
+              {profissional.avaliacaoGoogle.quantidade} avaliações)
             </span>
           </div>
         </div>

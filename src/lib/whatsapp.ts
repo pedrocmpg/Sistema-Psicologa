@@ -1,5 +1,7 @@
-const WHATSAPP_NUMBER = '5554997122959';
-const WHATSAPP_MENSAGEM = 'Olá! Gostaria de agendar uma consulta.';
+import { profissional } from '../config/profissional';
+
+const WHATSAPP_NUMBER = profissional.telefoneInternacional;
+const WHATSAPP_MENSAGEM = profissional.mensagemWhatsapp;
 
 export const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MENSAGEM)}`;
 

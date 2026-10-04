@@ -1,4 +1,4 @@
--- Sistema de agendamento — Psicóloga Daniele Walczak
+-- Sistema de agendamento — Psicóloga
 -- Migration 2: permite cancelar uma consulta já confirmada.
 --
 -- "Recusar" (0001) e "Cancelar" são semanticamente diferentes: recusar é decidir não aprovar

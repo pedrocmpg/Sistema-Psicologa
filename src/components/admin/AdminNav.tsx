@@ -1,4 +1,5 @@
 import { LogOut } from '../icons';
+import { profissional } from '../../config/profissional';
 import { ABAS, type Aba } from './abas';
 
 interface AdminNavProps {
@@ -14,10 +15,10 @@ export default function AdminNav({ aba, onChange, pendentes, onSair }: AdminNavP
     <aside className="admin-nav">
       <div className="admin-nav__brand">
         <span className="admin-nav__logo" aria-hidden="true">
-          D
+          {profissional.primeiroNome.charAt(0)}
         </span>
         <span className="admin-nav__brand-text">
-          <span className="admin-nav__brand-name">Daniele Walczak</span>
+          <span className="admin-nav__brand-name">{profissional.nome}</span>
           <span className="admin-nav__brand-sub">Painel de agendamentos</span>
         </span>
       </div>

@@ -1,7 +1,9 @@
-# Site — Psicóloga Daniele Walczak
+# Site de psicóloga + agendamento
 
-Site institucional + sistema de agendamento (demo) para a psicóloga clínica Daniele Walczak
-(CRP 07/36785), em Bento Gonçalves, RS.
+Site institucional + sistema de agendamento (demo) para psicóloga clínica.
+
+> **Trocar de cliente:** todos os dados pessoais (nome, CRP, telefone, endereço, horário, avaliação)
+> ficam em `src/config/profissional.ts`. Edite só esse arquivo; o `index.html` também lê dele.
 
 > ⚠️ **Isto é uma versão de demonstração.** O `index.html` tem `<meta name="robots" content="noindex, nofollow">`
 > e o `public/robots.txt` bloqueia toda indexação. Remova os dois quando o site for publicado de verdade.

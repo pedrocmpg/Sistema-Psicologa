@@ -1,4 +1,4 @@
--- Sistema de agendamento — Psicóloga Daniele Walczak
+-- Sistema de agendamento — Psicóloga
 -- Migration inicial: tabelas, RLS e funções de agendamento
 
 create extension if not exists "pgcrypto";

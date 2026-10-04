@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { supabase } from '../../lib/supabase';
+import { profissional } from '../../config/profissional';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ export default function LoginForm() {
           D
         </span>
         <h1 className="admin-login__title">Área administrativa</h1>
-        <div className="admin-login__subtitle">Acesso restrito à psicóloga Daniele Walczak.</div>
+        <div className="admin-login__subtitle">Acesso restrito à psicóloga {profissional.nome}.</div>
 
         <form onSubmit={handleSubmit}>
           {erro && <div className="alert alert-error">{erro}</div>}

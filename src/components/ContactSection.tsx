@@ -1,8 +1,9 @@
 import Reveal from './Reveal';
 import { MapPin, Phone, Clock, MessageCircle } from './icons';
 import { whatsappHref } from '../lib/whatsapp';
+import { profissional } from '../config/profissional';
 
-const ENDERECO = 'R. Dr. José Mário Mônaco, 227, sala 508, Centro, Bento Gonçalves, RS';
+const ENDERECO = profissional.endereco;
 const MAPS_QUERY = encodeURIComponent(ENDERECO);
 
 export default function ContactSection() {
@@ -41,7 +42,7 @@ export default function ContactSection() {
                 <div>
                   <div className="contact__list-title">Telefone / WhatsApp</div>
                   <div className="contact__list-desc">
-                    <a href="tel:+5554997122959">(54) 99712-2959</a>
+                    <a href={`tel:+${profissional.telefoneInternacional}`}>{profissional.telefoneExibicao}</a>
                   </div>
                 </div>
               </li>
@@ -51,7 +52,7 @@ export default function ContactSection() {
                 </span>
                 <div>
                   <div className="contact__list-title">Horário de atendimento</div>
-                  <div className="contact__list-desc">Segunda a sexta, das 9h às 19h30</div>
+                  <div className="contact__list-desc">{profissional.horarioAtendimento}</div>
                 </div>
               </li>
             </ul>
@@ -61,7 +62,7 @@ export default function ContactSection() {
               Conversar pelo WhatsApp
             </a>
 
-            <div className="contact__crp">Daniele Walczak — Psicóloga Clínica — CRP 07/36785</div>
+            <div className="contact__crp">{profissional.nome} — {profissional.titulo} — {profissional.crp}</div>
           </Reveal>
 
           <Reveal delay={120}>

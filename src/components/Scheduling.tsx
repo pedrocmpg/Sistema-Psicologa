@@ -4,6 +4,7 @@ import type { HorarioDisponivel } from '../types';
 import Reveal from './Reveal';
 import { ChevronLeft, ChevronRight, MessageCircle, Calendar, CalendarDays, ArrowRight, CircleCheck, ShieldCheck } from './icons';
 import { whatsappHref } from '../lib/whatsapp';
+import { profissional } from '../config/profissional';
 import { hojeISO, somarDias } from '../lib/date';
 
 function formatarHora(hora: string) {
@@ -254,7 +255,7 @@ export default function Scheduling() {
               <div className="scheduling__empty">
                 No momento não há horários disponíveis. Entre em contato pelo{' '}
                 <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
-                  WhatsApp (54) 99712-2959
+                  WhatsApp {profissional.telefoneExibicao}
                 </a>{' '}
                 para verificar a agenda.
               </div>

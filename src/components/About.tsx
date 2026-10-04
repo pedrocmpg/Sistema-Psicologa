@@ -1,12 +1,13 @@
 import Reveal from './Reveal';
+import { profissional } from '../config/profissional';
 import { Compass, Users, GraduationCap, UserRound, BadgeCheck, Building, Clock } from './icons';
 
 const dados = [
-  { Icon: UserRound, rotulo: 'Profissional', valor: 'Daniele Walczak' },
-  { Icon: BadgeCheck, rotulo: 'Registro', valor: 'CRP 07/36785' },
+  { Icon: UserRound, rotulo: 'Profissional', valor: profissional.nome },
+  { Icon: BadgeCheck, rotulo: 'Registro', valor: profissional.crp },
   { Icon: Building, rotulo: 'Atendimento', valor: 'Presencial' },
   { Icon: Users, rotulo: 'Público', valor: 'Adulto, infantil e casal' },
-  { Icon: Clock, rotulo: 'Horário', valor: 'Seg. a sex., 9h–19h30' },
+  { Icon: Clock, rotulo: 'Horário', valor: profissional.horarioAtendimentoCurto },
 ];
 
 const pontos = [
@@ -23,7 +24,7 @@ const pontos = [
   {
     Icon: GraduationCap,
     title: 'Formação e atualização contínua',
-    desc: 'Psicóloga clínica (CRP 07/36785), com formação em Terapia Cognitivo-Comportamental e atualização constante na área.',
+    desc: `Psicóloga clínica (${profissional.crp}), com formação em Terapia Cognitivo-Comportamental e atualização constante na área.`,
   },
 ];
 

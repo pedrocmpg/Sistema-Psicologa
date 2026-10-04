@@ -1,4 +1,4 @@
--- Sistema de agendamento — Psicóloga Daniele Walczak
+-- Sistema de agendamento — Psicóloga
 -- Migration 3: agendamento manual (criado pela psicóloga) e recorrência semanal.
 
 -- =========================================================

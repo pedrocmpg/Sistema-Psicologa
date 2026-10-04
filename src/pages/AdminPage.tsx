@@ -8,6 +8,7 @@ import PendingRequests from '../components/admin/PendingRequests';
 import ConfirmedList from '../components/admin/ConfirmedList';
 import RecusadosList from '../components/admin/RecusadosList';
 import ResumoPainel from '../components/admin/ResumoPainel';
+import { profissional } from '../config/profissional';
 import AdminNav from '../components/admin/AdminNav';
 import { ABAS, type Aba } from '../components/admin/abas';
 import { useResumoPainel } from '../hooks/useResumoPainel';
@@ -77,7 +78,7 @@ export default function AdminPage() {
 
       <main className="admin-main">
         <header className="admin-main__header">
-          <h1 className="admin-main__title">{saudacao()}, Daniele</h1>
+          <h1 className="admin-main__title">{saudacao()}, {profissional.primeiroNome}</h1>
           <p className="admin-main__date">{hoje}</p>
         </header>
 
