@@ -32,4 +32,11 @@ export {
   Building,
   Search,
   ShieldCheck,
+  RotateCw,
+  Settings,
+  TriangleAlert,
+  Send,
+  Wifi,
+  WifiOff,
+  RotateCcw,
 } from 'lucide-react';

@@ -11,3 +11,8 @@ export function whatsappPara(telefone: string): string {
   if (digitos.length === 10 || digitos.length === 11) digitos = `55${digitos}`;
   return `https://wa.me/${digitos}`;
 }
+
+/** Link de WhatsApp para o paciente com a mensagem já preenchida. */
+export function whatsappComTexto(telefone: string, texto: string): string {
+  return `${whatsappPara(telefone)}?text=${encodeURIComponent(texto)}`;
+}

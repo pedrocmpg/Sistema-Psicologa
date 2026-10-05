@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import type { Agendamento } from '../../types';
+import type { Agendamento, ConfigWhatsApp } from '../../types';
 import { CalendarCheck, Repeat, Search } from '../icons';
 import { agruparPorDia, formatarDataHora, ordenarPorHorario } from '../../lib/agendamentos';
 import { hojeISO, rotuloDia } from '../../lib/date';
@@ -8,20 +8,24 @@ import ManualAppointmentForm from './ManualAppointmentForm';
 import ContatoPaciente from './ContatoPaciente';
 import ConfirmDialog from './ConfirmDialog';
 import EmptyState, { Carregando } from './EmptyState';
+import NotificacaoSelo from './NotificacaoSelo';
+import { useNotificacoes } from '../../hooks/useNotificacoes';
 
 interface ConfirmedListProps {
   onChange?: () => void;
+  configWhatsApp: ConfigWhatsApp | null;
 }
 
 type FuncaoCancelamento = 'cancelar_agendamento' | 'cancelar_serie_recorrente';
 
-export default function ConfirmedList({ onChange }: ConfirmedListProps) {
+export default function ConfirmedList({ onChange, configWhatsApp }: ConfirmedListProps) {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [cancelando, setCancelando] = useState<string | null>(null);
   const [alvoCancelamento, setAlvoCancelamento] = useState<Agendamento | null>(null);
+  const { notificacoes, acompanhar } = useNotificacoes();
 
   async function carregar() {
     setCarregando(true);
@@ -51,6 +55,7 @@ export default function ConfirmedList({ onChange }: ConfirmedListProps) {
     }
 
     carregar();
+    acompanhar();
     onChange?.();
   }
 
@@ -70,6 +75,7 @@ export default function ConfirmedList({ onChange }: ConfirmedListProps) {
       <ManualAppointmentForm
         onCriado={() => {
           carregar();
+          acompanhar();
           onChange?.();
         }}
       />
@@ -124,6 +130,13 @@ export default function ConfirmedList({ onChange }: ConfirmedListProps) {
                     <div className="request-card__meta">
                       <ContatoPaciente telefone={a.telefone} email={a.email} />
                     </div>
+                    <NotificacaoSelo
+                      agendamento={a}
+                      lista={agendamentos}
+                      notificacoes={notificacoes}
+                      config={configWhatsApp}
+                      onReenviado={acompanhar}
+                    />
                   </div>
                   <div className="request-card__actions">
                     <button

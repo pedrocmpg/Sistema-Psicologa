@@ -15,6 +15,7 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
   const [hora, setHora] = useState('');
   const [repetir, setRepetir] = useState(false);
   const [semanas, setSemanas] = useState(8);
+  const [notificar, setNotificar] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [resultado, setResultado] = useState<string | null>(null);
@@ -26,6 +27,7 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
     setHora('');
     setRepetir(false);
     setSemanas(8);
+    setNotificar(true);
   }
 
   async function salvar(e: FormEvent) {
@@ -46,6 +48,7 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
       p_data: data,
       p_hora: hora,
       p_semanas: repetir ? semanas : 1,
+      p_notificar_whatsapp: notificar,
     });
 
     setSalvando(false);
@@ -129,6 +132,11 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
               />
             </div>
           )}
+
+          <label className="field-checkbox">
+            <input type="checkbox" checked={notificar} onChange={(e) => setNotificar(e.target.checked)} />
+            Enviar confirmação por WhatsApp
+          </label>
 
           <button type="submit" className="btn btn-primary" disabled={salvando}>
             {salvando ? 'Salvando...' : 'Salvar agendamento'}

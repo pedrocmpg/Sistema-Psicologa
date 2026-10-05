@@ -11,19 +11,21 @@ interface PendingRequestsProps {
   onChange?: () => void;
 }
 
-interface OpcoesRecorrencia {
+interface OpcoesPedido {
   repetir: boolean;
   semanas: number;
+  /** Mensagem automática de WhatsApp ao confirmar ou recusar. */
+  notificar: boolean;
 }
 
-const OPCOES_PADRAO: OpcoesRecorrencia = { repetir: false, semanas: 8 };
+const OPCOES_PADRAO: OpcoesPedido = { repetir: false, semanas: 8, notificar: true };
 
 export default function PendingRequests({ onChange }: PendingRequestsProps) {
   const [pedidos, setPedidos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [processando, setProcessando] = useState<string | null>(null);
-  const [opcoesPorPedido, setOpcoesPorPedido] = useState<Record<string, OpcoesRecorrencia>>({});
+  const [opcoesPorPedido, setOpcoesPorPedido] = useState<Record<string, OpcoesPedido>>({});
 
   async function carregar() {
     setCarregando(true);
@@ -40,11 +42,11 @@ export default function PendingRequests({ onChange }: PendingRequestsProps) {
     carregar();
   }, []);
 
-  function opcoesDe(id: string): OpcoesRecorrencia {
+  function opcoesDe(id: string): OpcoesPedido {
     return opcoesPorPedido[id] ?? OPCOES_PADRAO;
   }
 
-  function atualizarOpcoes(id: string, mudanca: Partial<OpcoesRecorrencia>) {
+  function atualizarOpcoes(id: string, mudanca: Partial<OpcoesPedido>) {
     setOpcoesPorPedido((atual) => ({ ...atual, [id]: { ...opcoesDe(id), ...mudanca } }));
   }
 
@@ -57,8 +59,9 @@ export default function PendingRequests({ onChange }: PendingRequestsProps) {
       ? await supabase.rpc('confirmar_agendamento_recorrente', {
           p_agendamento_id: p.id,
           p_semanas: opcoes.semanas,
+          p_notificar_whatsapp: opcoes.notificar,
         })
-      : await supabase.rpc('confirmar_agendamento', { p_agendamento_id: p.id });
+      : await supabase.rpc('confirmar_agendamento', { p_agendamento_id: p.id, p_notificar_whatsapp: opcoes.notificar });
 
     setProcessando(null);
     if (error) {
@@ -72,7 +75,10 @@ export default function PendingRequests({ onChange }: PendingRequestsProps) {
   async function recusar(id: string) {
     setErro(null);
     setProcessando(id);
-    const { error } = await supabase.rpc('recusar_agendamento', { p_agendamento_id: id });
+    const { error } = await supabase.rpc('recusar_agendamento', {
+      p_agendamento_id: id,
+      p_notificar_whatsapp: opcoesDe(id).notificar,
+    });
     setProcessando(null);
     if (error) {
       setErro('Não foi possível recusar o pedido.');
@@ -136,6 +142,18 @@ export default function PendingRequests({ onChange }: PendingRequestsProps) {
                     </div>
 
                     <div className="request-card__extra">
+                      <label
+                        className="field-checkbox"
+                        title="Vale para Confirmar e para Recusar: o paciente recebe a mensagem automática."
+                      >
+                        <input
+                          type="checkbox"
+                          checked={opcoes.notificar}
+                          onChange={(e) => atualizarOpcoes(p.id, { notificar: e.target.checked })}
+                        />
+                        Enviar confirmação por WhatsApp
+                      </label>
+
                       <label className="field-checkbox">
                         <input
                           type="checkbox"

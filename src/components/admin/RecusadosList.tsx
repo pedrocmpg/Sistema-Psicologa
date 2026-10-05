@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import type { Agendamento } from '../../types';
+import type { Agendamento, ConfigWhatsApp } from '../../types';
 import { Ban, Calendar } from '../icons';
 import { formatarDataHora, ordenarPorHorario } from '../../lib/agendamentos';
 import ContatoPaciente from './ContatoPaciente';
 import EmptyState, { Carregando } from './EmptyState';
+import NotificacaoSelo from './NotificacaoSelo';
+import { useNotificacoes } from '../../hooks/useNotificacoes';
 
 const rotulo: Record<string, string> = {
   recusado: 'Recusado',
@@ -19,9 +21,14 @@ function formatarDiaCurto(data?: string) {
     .replace('.', '');
 }
 
-export default function RecusadosList() {
+interface RecusadosListProps {
+  configWhatsApp: ConfigWhatsApp | null;
+}
+
+export default function RecusadosList({ configWhatsApp }: RecusadosListProps) {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const { notificacoes, acompanhar } = useNotificacoes();
 
   useEffect(() => {
     async function carregar() {
@@ -70,6 +77,13 @@ export default function RecusadosList() {
                   </span>
                   <ContatoPaciente telefone={a.telefone} email={a.email} />
                 </div>
+                <NotificacaoSelo
+                  agendamento={a}
+                  lista={agendamentos}
+                  notificacoes={notificacoes}
+                  config={configWhatsApp}
+                  onReenviado={acompanhar}
+                />
               </div>
             </article>
           ))}

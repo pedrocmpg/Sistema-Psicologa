@@ -12,6 +12,7 @@ import { profissional } from '../config/profissional';
 import AdminNav from '../components/admin/AdminNav';
 import { ABAS, type Aba } from '../components/admin/abas';
 import { useResumoPainel } from '../hooks/useResumoPainel';
+import { useConfigWhatsApp } from '../hooks/useConfigWhatsApp';
 
 function saudacao() {
   const hora = new Date().getHours();
@@ -40,6 +41,7 @@ export default function AdminPage() {
   }
 
   const numeros = useResumoPainel(refreshTick, !!session);
+  const whatsapp = useConfigWhatsApp(!!session);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -85,8 +87,8 @@ export default function AdminPage() {
         <ResumoPainel numeros={numeros} onNavegar={setAba} />
 
         {aba === 'pendentes' && <PendingRequests onChange={bump} />}
-        {aba === 'confirmados' && <ConfirmedList onChange={bump} />}
-        {aba === 'recusados' && <RecusadosList />}
+        {aba === 'confirmados' && <ConfirmedList onChange={bump} configWhatsApp={whatsapp.config} />}
+        {aba === 'recusados' && <RecusadosList configWhatsApp={whatsapp.config} />}
         {aba === 'agenda' && <AvailabilityManager />}
       </main>
     </div>

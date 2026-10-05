@@ -2638,6 +2638,75 @@ p {
   }
 }
 
+/* Status da mensagem automática de WhatsApp (dentro do card) */
+.notif {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-2);
+  font-size: 0.8rem;
+}
+
+.notif__selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px 2px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: help;
+}
+
+.notif__selo > span {
+  font-weight: 700;
+}
+
+.notif__selo--enviado {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.notif__selo--falhou {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.notif__selo--ignorado {
+  background: var(--color-blue-gray-light);
+  color: var(--color-blue-gray);
+}
+
+.notif__selo--pendente {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.notif__acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 2rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-sage-dark);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.notif__acao:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.notif__erro {
+  flex-basis: 100%;
+  color: var(--color-danger);
+}
+
 /* =========================================================
    Dialog de confirmação
    ========================================================= */
