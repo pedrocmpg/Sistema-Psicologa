@@ -24,7 +24,7 @@ export default function AdminNav({ aba, onChange, pendentes, onSair }: AdminNavP
       </div>
 
       <nav className="admin-nav__items" aria-label="Seções do painel">
-        {ABAS.map(({ id, rotulo, Icon }) => (
+        {ABAS.map(({ id, rotulo, rotuloCurto, Icon }) => (
           <button
             key={id}
             type="button"
@@ -35,7 +35,8 @@ export default function AdminNav({ aba, onChange, pendentes, onSair }: AdminNavP
             <span className="admin-nav__item-icon" aria-hidden="true">
               <Icon size={20} strokeWidth={1.9} />
             </span>
-            {rotulo}
+            <span className="admin-nav__rotulo">{rotulo}</span>
+            <span className="admin-nav__rotulo-curto">{rotuloCurto ?? rotulo}</span>
             {id === 'pendentes' && pendentes > 0 && (
               <span className="admin-nav__count" aria-label={`${pendentes} pendentes`}>
                 {pendentes}

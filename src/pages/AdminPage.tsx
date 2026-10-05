@@ -8,11 +8,14 @@ import PendingRequests from '../components/admin/PendingRequests';
 import ConfirmedList from '../components/admin/ConfirmedList';
 import RecusadosList from '../components/admin/RecusadosList';
 import ResumoPainel from '../components/admin/ResumoPainel';
+import WhatsAppConfig from '../components/admin/WhatsAppConfig';
+import { TriangleAlert } from '../components/icons';
 import { profissional } from '../config/profissional';
 import AdminNav from '../components/admin/AdminNav';
 import { ABAS, type Aba } from '../components/admin/abas';
 import { useResumoPainel } from '../hooks/useResumoPainel';
 import { useConfigWhatsApp } from '../hooks/useConfigWhatsApp';
+import { useStatusWhatsApp } from '../hooks/useStatusWhatsApp';
 
 function saudacao() {
   const hora = new Date().getHours();
@@ -42,6 +45,8 @@ export default function AdminPage() {
 
   const numeros = useResumoPainel(refreshTick, !!session);
   const whatsapp = useConfigWhatsApp(!!session);
+  const statusWhatsApp = useStatusWhatsApp(!!session);
+  const whatsappCaiu = !!whatsapp.config?.ativo && statusWhatsApp.saude?.conectado === false;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -79,6 +84,21 @@ export default function AdminPage() {
       <AdminNav aba={aba} onChange={setAba} pendentes={numeros?.pendentes ?? 0} onSair={() => supabase.auth.signOut()} />
 
       <main className="admin-main">
+        {whatsappCaiu && (
+          <div className="admin-banner" role="alert">
+            <TriangleAlert size={20} strokeWidth={2} aria-hidden="true" />
+            <span>
+              <strong>WhatsApp automático desconectado.</strong> As mensagens não estão saindo. Reconecte o
+              número (QR code) e, enquanto isso, use "Enviar manualmente" nos agendamentos.
+            </span>
+            {aba !== 'config' && (
+              <button type="button" className="btn btn-sm admin-banner__btn" onClick={() => setAba('config')}>
+                Ver conexão
+              </button>
+            )}
+          </div>
+        )}
+
         <header className="admin-main__header">
           <h1 className="admin-main__title">{saudacao()}, {profissional.primeiroNome}</h1>
           <p className="admin-main__date">{hoje}</p>
@@ -90,6 +110,7 @@ export default function AdminPage() {
         {aba === 'confirmados' && <ConfirmedList onChange={bump} configWhatsApp={whatsapp.config} />}
         {aba === 'recusados' && <RecusadosList configWhatsApp={whatsapp.config} />}
         {aba === 'agenda' && <AvailabilityManager />}
+        {aba === 'config' && <WhatsAppConfig whatsapp={whatsapp} status={statusWhatsApp} />}
       </main>
     </div>
   );
