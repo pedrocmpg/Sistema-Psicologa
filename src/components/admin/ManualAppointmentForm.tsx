@@ -3,6 +3,11 @@ import { supabase } from '../../lib/supabase';
 import DatePicker from './DatePicker';
 import ToolCard from './ToolCard';
 import { CalendarPlus } from '../icons';
+import {
+  apenasDigitos,
+  mascaraDigitacaoTelefone,
+  validarCelularBR,
+} from '../../../supabase/functions/_shared/whatsapp/telefone.ts';
 
 interface ManualAppointmentFormProps {
   onCriado: () => void;
@@ -98,9 +103,14 @@ export default function ManualAppointmentForm({ onCriado }: ManualAppointmentFor
               id="manual-telefone"
               type="tel"
               value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
+              onChange={(e) => setTelefone(mascaraDigitacaoTelefone(e.target.value))}
               placeholder="(54) 99999-9999"
             />
+            {apenasDigitos(telefone).length >= 10 && !validarCelularBR(telefone) && (
+              <p className="batch-form__field-hint">
+                Não parece um celular com DDD: o agendamento é salvo, mas o paciente não recebe WhatsApp automático.
+              </p>
+            )}
           </div>
 
           <div className="batch-form__row">

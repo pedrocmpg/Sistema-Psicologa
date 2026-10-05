@@ -6,6 +6,9 @@ import { ChevronLeft, ChevronRight, MessageCircle, Calendar, CalendarDays, Arrow
 import { whatsappHref } from '../lib/whatsapp';
 import { profissional } from '../config/profissional';
 import { hojeISO, somarDias } from '../lib/date';
+import { mascaraDigitacaoTelefone, validarCelularBR } from '../../supabase/functions/_shared/whatsapp/telefone.ts';
+
+const ERRO_TELEFONE = 'Informe um celular com DDD, ex.: (54) 99999-9999.';
 
 function formatarHora(hora: string) {
   return hora.slice(0, 5);
@@ -42,6 +45,7 @@ export default function Scheduling() {
   const [selecionado, setSelecionado] = useState<HorarioDisponivel | null>(null);
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
+  const [telefoneTocado, setTelefoneTocado] = useState(false);
   const [email, setEmail] = useState('');
   const [consentimento, setConsentimento] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -139,6 +143,13 @@ export default function Scheduling() {
   async function enviarPedido(e: FormEvent) {
     e.preventDefault();
     if (!selecionado) return;
+    if (!validarCelularBR(telefone)) {
+      // O erro aparece embaixo do próprio campo (aria-describedby); aqui só leva o foco até ele.
+      setTelefoneTocado(true);
+      setErroEnvio(null);
+      document.getElementById('telefone')?.focus();
+      return;
+    }
     if (!consentimento) {
       setErroEnvio('É necessário concordar em ser contatado(a) para enviar o pedido.');
       return;
@@ -171,12 +182,14 @@ export default function Scheduling() {
     setSucesso(true);
     setNome('');
     setTelefone('');
+    setTelefoneTocado(false);
     setEmail('');
     setConsentimento(false);
   }
 
   const hoje = hojeISO();
   const amanha = somarDias(hoje, 1);
+  const telefoneInvalido = telefoneTocado && telefone.length > 0 && !validarCelularBR(telefone);
 
   return (
     <section id="agendamento" className="section scheduling">
@@ -386,9 +399,17 @@ export default function Scheduling() {
                       required
                       autoComplete="tel"
                       value={telefone}
-                      onChange={(e) => setTelefone(e.target.value)}
+                      onChange={(e) => setTelefone(mascaraDigitacaoTelefone(e.target.value))}
+                      onBlur={() => setTelefoneTocado(true)}
                       placeholder="(54) 99999-9999"
+                      aria-invalid={telefoneInvalido || undefined}
+                      aria-describedby={telefoneInvalido ? 'telefone-erro' : undefined}
                     />
+                    {telefoneInvalido && (
+                      <p className="field-error" id="telefone-erro">
+                        {ERRO_TELEFONE}
+                      </p>
+                    )}
                   </div>
 
                   <div className="field">
@@ -418,7 +439,8 @@ export default function Scheduling() {
                       checked={consentimento}
                       onChange={(e) => setConsentimento(e.target.checked)}
                     />
-                    Concordo em ser contatado(a) pela psicóloga pelos dados informados acima.
+                    Concordo em ser contatado(a) pela psicóloga por telefone, WhatsApp ou e-mail para confirmação do
+                    meu horário.
                   </label>
 
                   <button type="submit" className="btn btn-primary btn-block" disabled={enviando}>

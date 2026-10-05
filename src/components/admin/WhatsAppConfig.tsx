@@ -45,6 +45,11 @@ function formularioDe(config: ConfigWhatsApp | null): Formulario {
   };
 }
 
+/** Erros do provedor podem ser enormes; o texto completo fica no hover. */
+function resumir(texto: string, limite = 70): string {
+  return texto.length > limite ? `${texto.slice(0, limite)}…` : texto;
+}
+
 /** Placeholders usados no texto que não existem (erro de digitação aparece antes de salvar). */
 function placeholdersDesconhecidos(texto: string): string[] {
   const validos = new Set(PLACEHOLDERS.map((p) => p.chave));
@@ -183,9 +188,9 @@ export default function WhatsAppConfig({ whatsapp, status }: WhatsAppConfigProps
           ) : (
             <span className="status-pill">{erroSaude ? 'Serviço indisponível' : 'Verificando…'}</span>
           )}
-          <span className="whatsapp-config__provedor">
+          <span className="whatsapp-config__provedor" title={saude?.estado}>
             {saude && `Provedor: ${saude.provider}`}
-            {saude && !saude.conectado && saude.estado && ` (${saude.estado})`}
+            {saude && !saude.conectado && saude.estado && ` (${resumir(saude.estado)})`}
             {saude?.dryRun && ' · modo de teste (dry-run): nada é enviado'}
             {saude?.provider === 'mock' && !saude.dryRun && ' · simulação: nada é enviado'}
             {erroSaude && 'A Edge Function whatsapp-admin não respondeu.'}
@@ -206,7 +211,7 @@ export default function WhatsAppConfig({ whatsapp, status }: WhatsAppConfigProps
             <span>
               <strong>Envio automático {form.ativo ? 'ativado' : 'desativado'}</strong>
               <br />
-              Desativado, nada é enviado (os eventos ficam registrados como "não enviado").
+              Quando desativado, nada é enviado (os eventos ficam registrados como "não enviado").
             </span>
           </label>
 
