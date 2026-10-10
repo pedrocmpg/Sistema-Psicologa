@@ -1,14 +1,15 @@
-import { profissional } from '../config/profissional';
+import { textos } from '../config/profissional';
 
 export default function Footer() {
+  const { rodape } = textos;
   return (
     <footer className="site-footer">
       <div className="container site-footer__inner">
+        <span>{rodape.assinatura}</span>
         <span>
-          {profissional.nome} — {profissional.titulo} — {profissional.crp}
+          © {new Date().getFullYear()} · {rodape.local}
         </span>
-        <span>© {new Date().getFullYear()} · {profissional.cidadeUF}</span>
-        <a href="/admin">Acesso administrativo</a>
+        <a href="/admin">{rodape.acessoAdmin}</a>
       </div>
     </footer>
   );

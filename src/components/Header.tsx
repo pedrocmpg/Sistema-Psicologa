@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Menu, X } from './icons';
-import { profissional } from '../config/profissional';
+import { profissional, textos } from '../config/profissional';
 
 export default function Header() {
+  const { cabecalho } = textos;
   const [menuAberto, setMenuAberto] = useState(false);
   const [rolou, setRolou] = useState(false);
 
@@ -33,33 +34,29 @@ export default function Header() {
       <div className="container site-header__inner">
         <a href="#topo" className="site-header__brand" onClick={fecharMenu}>
           <span className="site-header__name">{profissional.nome}</span>
-          <span className="site-header__crp">{profissional.titulo} · {profissional.crp}</span>
+          <span className="site-header__crp">{cabecalho.subtitulo}</span>
         </a>
         <nav className="site-header__nav" aria-label="Principal">
           <div id="menu-principal" className={`site-header__nav-links ${menuAberto ? 'is-open' : ''}`}>
-            <a href="#sobre" onClick={fecharMenu}>
-              Sobre
-            </a>
-            <a href="#especialidades" onClick={fecharMenu}>
-              Especialidades
-            </a>
-            <a href="#contato" onClick={fecharMenu}>
-              Contato
-            </a>
+            {cabecalho.menu.map((item) => (
+              <a key={item.destino} href={item.destino} onClick={fecharMenu}>
+                {item.rotulo}
+              </a>
+            ))}
             <a href="#agendamento" className="btn btn-primary" onClick={fecharMenu}>
-              Agendar horário
+              {cabecalho.botaoAgendar}
             </a>
           </div>
           <a href="#agendamento" className="btn btn-primary btn-sm" onClick={fecharMenu}>
-            <span className="site-header__cta-long">Agendar horário</span>
-            <span className="site-header__cta-short">Agendar</span>
+            <span className="site-header__cta-long">{cabecalho.botaoAgendar}</span>
+            <span className="site-header__cta-short">{cabecalho.botaoAgendarCurto}</span>
           </a>
           <button
             type="button"
             className="site-header__menu-btn"
             aria-expanded={menuAberto}
             aria-controls="menu-principal"
-            aria-label={menuAberto ? 'Fechar menu' : 'Abrir menu'}
+            aria-label={menuAberto ? cabecalho.fecharMenu : cabecalho.abrirMenu}
             onClick={() => setMenuAberto((a) => !a)}
           >
             {menuAberto ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}

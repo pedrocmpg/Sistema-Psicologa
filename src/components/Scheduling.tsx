@@ -4,11 +4,11 @@ import type { HorarioDisponivel } from '../types';
 import Reveal from './Reveal';
 import { ChevronLeft, ChevronRight, MessageCircle, Calendar, CalendarDays, ArrowRight, CircleCheck, ShieldCheck } from './icons';
 import { whatsappHref } from '../lib/whatsapp';
-import { profissional } from '../config/profissional';
+import { textos } from '../config/profissional';
 import { hojeISO, somarDias } from '../lib/date';
 import { mascaraDigitacaoTelefone, validarCelularBR } from '../../supabase/functions/_shared/whatsapp/telefone.ts';
 
-const ERRO_TELEFONE = 'Informe um celular com DDD, ex.: (54) 99999-9999.';
+const t = textos.agendamento;
 
 function formatarHora(hora: string) {
   return hora.slice(0, 5);
@@ -71,7 +71,7 @@ export default function Scheduling() {
       .order('hora', { ascending: true });
 
     if (error) {
-      setErroCarregamento('Não foi possível carregar os horários disponíveis. Tente novamente em instantes.');
+      setErroCarregamento(t.calendario.erroCarregar);
     } else {
       setHorarios(data ?? []);
     }
@@ -151,7 +151,7 @@ export default function Scheduling() {
       return;
     }
     if (!consentimento) {
-      setErroEnvio('É necessário concordar em ser contatado(a) para enviar o pedido.');
+      setErroEnvio(t.formulario.consentimentoErro);
       return;
     }
 
@@ -170,8 +170,8 @@ export default function Scheduling() {
     if (error) {
       setErroEnvio(
         error.message.includes('não está mais disponível')
-          ? 'Esse horário acabou de ser reservado por outra pessoa. Escolha outro horário.'
-          : 'Não foi possível enviar seu pedido agora. Tente novamente.'
+          ? t.formulario.erroHorarioOcupado
+          : t.formulario.erroEnvio
       );
       carregarHorarios();
       setSelecionado(null);
@@ -195,20 +195,14 @@ export default function Scheduling() {
     <section id="agendamento" className="section scheduling">
       <div className="container">
         <Reveal>
-          <div className="section-eyebrow">Agendamento online</div>
-          <h2 className="section-heading">Escolha um horário disponível</h2>
-          <p className="section-subheading">
-            Selecione um dia e horário livre na agenda. Seu pedido será enviado para análise — a
-            confirmação é feita pela psicóloga pelo telefone ou WhatsApp informado.
-          </p>
+          <div className="section-eyebrow">{t.chamada}</div>
+          <h2 className="section-heading">{t.titulo}</h2>
+          <p className="section-subheading">{t.texto}</p>
         </Reveal>
 
         <Reveal>
           <div className="contact-choice">
-            <p className="contact-choice__intro">
-              Prefere conversar antes? Me chame no WhatsApp. Já sabe o que precisa? Agende direto
-              abaixo.
-            </p>
+            <p className="contact-choice__intro">{t.escolha.intro}</p>
             <div className="contact-choice__options">
               <a
                 href={whatsappHref}
@@ -219,8 +213,8 @@ export default function Scheduling() {
                 <span className="contact-choice__icon" aria-hidden="true">
                   <MessageCircle size={22} strokeWidth={2} />
                 </span>
-                <span className="contact-choice__title">Falar direto comigo</span>
-                <span className="contact-choice__desc">Tire dúvidas ou combine os detalhes pelo WhatsApp.</span>
+                <span className="contact-choice__title">{t.escolha.whatsappTitulo}</span>
+                <span className="contact-choice__desc">{t.escolha.whatsappTexto}</span>
                 <ArrowRight className="contact-choice__arrow" size={18} strokeWidth={2} aria-hidden="true" />
               </a>
 
@@ -228,8 +222,8 @@ export default function Scheduling() {
                 <span className="contact-choice__icon" aria-hidden="true">
                   <Calendar size={22} strokeWidth={2} />
                 </span>
-                <span className="contact-choice__title">Agendar meu horário</span>
-                <span className="contact-choice__desc">Veja os horários livres e escolha o seu, agora mesmo.</span>
+                <span className="contact-choice__title">{t.escolha.agendarTitulo}</span>
+                <span className="contact-choice__desc">{t.escolha.agendarTexto}</span>
                 <ArrowRight className="contact-choice__arrow" size={18} strokeWidth={2} aria-hidden="true" />
               </a>
             </div>
@@ -242,16 +236,16 @@ export default function Scheduling() {
         >
           <div>
             <div className="scheduling__calendar-head">
-              <h3 className="scheduling__calendar-title">Horários livres</h3>
+              <h3 className="scheduling__calendar-title">{t.calendario.titulo}</h3>
               {temDias && !carregando && (
                 <span className="scheduling__calendar-hint">
-                  {dias.length} {dias.length === 1 ? 'dia disponível' : 'dias disponíveis'}
+                  {dias.length} {dias.length === 1 ? t.calendario.umDia : t.calendario.variosDias}
                 </span>
               )}
             </div>
 
             {carregando && (
-              <div className="scheduling__days" aria-busy="true" aria-label="Carregando horários disponíveis">
+              <div className="scheduling__days" aria-busy="true" aria-label={t.calendario.carregando}>
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div className="day-card day-card--skeleton" key={i}>
                     <span className="skeleton" />
@@ -266,11 +260,11 @@ export default function Scheduling() {
 
             {!carregando && !erroCarregamento && !temDias && (
               <div className="scheduling__empty">
-                No momento não há horários disponíveis. Entre em contato pelo{' '}
+                {t.calendario.semHorariosAntes}{' '}
                 <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
-                  WhatsApp {profissional.telefoneExibicao}
+                  {t.calendario.semHorariosLink}
                 </a>{' '}
-                para verificar a agenda.
+                {t.calendario.semHorariosDepois}
               </div>
             )}
 
@@ -284,7 +278,7 @@ export default function Scheduling() {
                     className="scheduling__scroll-btn scheduling__scroll-btn--left"
                     onClick={() => rolar(-1)}
                     disabled={!podeVoltar}
-                    aria-label="Ver dias anteriores"
+                    aria-label={t.calendario.diasAnteriores}
                   >
                     <ChevronLeft size={22} strokeWidth={3} />
                   </button>
@@ -293,7 +287,7 @@ export default function Scheduling() {
                 <div className="scheduling__days" ref={diasContainerRef}>
                   {dias.map((dia) => {
                     const temSelecionado = dia.horarios.some((h) => h.id === selecionado?.id);
-                    const tag = dia.data === hoje ? 'Hoje' : dia.data === amanha ? 'Amanhã' : null;
+                    const tag = dia.data === hoje ? t.calendario.hoje : dia.data === amanha ? t.calendario.amanha : null;
                     return (
                       <div
                         className={`day-card ${temSelecionado ? 'has-selected' : ''}`}
@@ -332,7 +326,7 @@ export default function Scheduling() {
                     className="scheduling__scroll-btn scheduling__scroll-btn--right"
                     onClick={() => rolar(1)}
                     disabled={!podeAvancar}
-                    aria-label="Ver mais dias"
+                    aria-label={t.calendario.maisDias}
                   >
                     <ChevronRight size={22} strokeWidth={3} />
                   </button>
@@ -348,15 +342,15 @@ export default function Scheduling() {
                   <div className="form-success__icon" aria-hidden="true">
                     <CircleCheck size={28} strokeWidth={2} />
                   </div>
-                  <strong>Seu pedido foi enviado!</strong>
-                  <p>A psicóloga vai confirmar em breve pelo telefone ou WhatsApp informado.</p>
+                  <strong>{t.sucesso.titulo}</strong>
+                  <p>{t.sucesso.texto}</p>
                   <button type="button" className="btn btn-secondary btn-sm" onClick={escolherOutro}>
-                    Escolher outro horário
+                    {t.sucesso.botao}
                   </button>
                 </div>
               ) : selecionado ? (
                 <form className="booking-panel fade-in" onSubmit={enviarPedido} ref={formRef} key={selecionado.id}>
-                  <h3 className="booking-panel__title">Seus dados</h3>
+                  <h3 className="booking-panel__title">{t.formulario.titulo}</h3>
 
                   <div className="booking-panel__slot">
                     <span className="booking-panel__slot-icon" aria-hidden="true">
@@ -364,10 +358,12 @@ export default function Scheduling() {
                     </span>
                     <span className="booking-panel__slot-text">
                       <strong>{formatarDataLonga(selecionado.data)}</strong>
-                      <span>às {formatarHora(selecionado.hora)}</span>
+                      <span>
+                        {t.formulario.horaPrefixo} {formatarHora(selecionado.hora)}
+                      </span>
                     </span>
                     <button type="button" className="link-btn" onClick={() => setSelecionado(null)}>
-                      trocar
+                      {t.formulario.trocar}
                     </button>
                   </div>
 
@@ -378,7 +374,7 @@ export default function Scheduling() {
                   )}
 
                   <div className="field">
-                    <label htmlFor="nome">Nome completo</label>
+                    <label htmlFor="nome">{t.formulario.nomeRotulo}</label>
                     <input
                       id="nome"
                       type="text"
@@ -386,12 +382,12 @@ export default function Scheduling() {
                       autoComplete="name"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
-                      placeholder="Seu nome completo"
+                      placeholder={t.formulario.nomePlaceholder}
                     />
                   </div>
 
                   <div className="field">
-                    <label htmlFor="telefone">Telefone (WhatsApp)</label>
+                    <label htmlFor="telefone">{t.formulario.telefoneRotulo}</label>
                     <input
                       id="telefone"
                       type="tel"
@@ -401,19 +397,19 @@ export default function Scheduling() {
                       value={telefone}
                       onChange={(e) => setTelefone(mascaraDigitacaoTelefone(e.target.value))}
                       onBlur={() => setTelefoneTocado(true)}
-                      placeholder="(54) 99999-9999"
+                      placeholder={t.formulario.telefonePlaceholder}
                       aria-invalid={telefoneInvalido || undefined}
                       aria-describedby={telefoneInvalido ? 'telefone-erro' : undefined}
                     />
                     {telefoneInvalido && (
                       <p className="field-error" id="telefone-erro">
-                        {ERRO_TELEFONE}
+                        {t.formulario.telefoneErro}
                       </p>
                     )}
                   </div>
 
                   <div className="field">
-                    <label htmlFor="email">E-mail</label>
+                    <label htmlFor="email">{t.formulario.emailRotulo}</label>
                     <input
                       id="email"
                       type="email"
@@ -421,16 +417,13 @@ export default function Scheduling() {
                       autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="voce@email.com"
+                      placeholder={t.formulario.emailPlaceholder}
                     />
                   </div>
 
                   <div className="privacy-note">
                     <ShieldCheck size={16} strokeWidth={2} aria-hidden="true" />
-                    <span>
-                      Usamos seus dados apenas para confirmar sua consulta. Não compartilhamos com
-                      terceiros.
-                    </span>
+                    <span>{t.formulario.privacidade}</span>
                   </div>
 
                   <label className="field-checkbox">
@@ -439,19 +432,18 @@ export default function Scheduling() {
                       checked={consentimento}
                       onChange={(e) => setConsentimento(e.target.checked)}
                     />
-                    Concordo em ser contatado(a) pela psicóloga por telefone, WhatsApp ou e-mail para confirmação do
-                    meu horário.
+                    {t.formulario.consentimento}
                   </label>
 
                   <button type="submit" className="btn btn-primary btn-block" disabled={enviando}>
-                    {enviando ? 'Enviando...' : 'Enviar pedido de agendamento'}
+                    {enviando ? t.formulario.botaoEnviando : t.formulario.botaoEnviar}
                   </button>
                 </form>
               ) : (
                 <div className="booking-placeholder">
                   <CalendarDays size={32} strokeWidth={1.6} aria-hidden="true" />
-                  <strong>Escolha um horário</strong>
-                  Selecione um dia e horário ao lado para preencher seus dados.
+                  <strong>{t.placeholder.titulo}</strong>
+                  {t.placeholder.texto}
                 </div>
               )}
             </div>

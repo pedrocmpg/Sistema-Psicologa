@@ -1,75 +1,53 @@
 import Reveal from './Reveal';
-import { profissional } from '../config/profissional';
-import { Compass, Users, GraduationCap, UserRound, BadgeCheck, Building, Clock } from './icons';
-
-const dados = [
-  { Icon: UserRound, rotulo: 'Profissional', valor: profissional.nome },
-  { Icon: BadgeCheck, rotulo: 'Registro', valor: profissional.crp },
-  { Icon: Building, rotulo: 'Atendimento', valor: 'Presencial' },
-  { Icon: Users, rotulo: 'Público', valor: 'Adulto, infantil e casal' },
-  { Icon: Clock, rotulo: 'Horário', valor: profissional.horarioAtendimentoCurto },
-];
-
-const pontos = [
-  {
-    Icon: Compass,
-    title: 'Abordagem cognitivo-comportamental (TCC)',
-    desc: 'Terapia estruturada, com objetivos claros e técnicas baseadas em evidências para lidar com pensamentos, emoções e comportamentos.',
-  },
-  {
-    Icon: Users,
-    title: 'Adultos, crianças e casais',
-    desc: 'Atendimento individual para adultos e crianças, além de psicoterapia de casal, com linguagem e recursos adequados a cada fase da vida.',
-  },
-  {
-    Icon: GraduationCap,
-    title: 'Formação e atualização contínua',
-    desc: `Psicóloga clínica (${profissional.crp}), com formação em Terapia Cognitivo-Comportamental e atualização constante na área.`,
-  },
-];
+import { ICONES_TEXTO } from './iconesTexto';
+import { textos } from '../config/profissional';
 
 export default function About() {
+  const { sobre } = textos;
   return (
     <section id="sobre" className="section about">
       <div className="container">
         <Reveal>
-          <div className="section-eyebrow">Sobre o atendimento</div>
-          <h2 className="section-heading">Um cuidado próximo, técnico e sem julgamentos.</h2>
-          <p className="section-subheading">
-            Cada pessoa chega com uma história diferente. O trabalho aqui é construir, junto, um
-            espaço seguro para entender o que está sendo vivido — no tempo de cada um.
-          </p>
+          <div className="section-eyebrow">{sobre.chamada}</div>
+          <h2 className="section-heading">{sobre.titulo}</h2>
+          <p className="section-subheading">{sobre.texto}</p>
         </Reveal>
 
         <div className="about__grid">
           <Reveal>
             <ul className="about__list">
-              {pontos.map((p) => (
-                <li key={p.title}>
-                  <span className="about__list-icon" aria-hidden="true">
-                    <p.Icon size={20} strokeWidth={1.8} />
-                  </span>
-                  <div>
-                    <div className="about__list-title">{p.title}</div>
-                    <div className="about__list-desc">{p.desc}</div>
-                  </div>
-                </li>
-              ))}
+              {sobre.pontos.map((ponto) => {
+                const Icone = ICONES_TEXTO[ponto.icone];
+                return (
+                  <li key={ponto.titulo}>
+                    <span className="about__list-icon" aria-hidden="true">
+                      <Icone size={20} strokeWidth={1.8} />
+                    </span>
+                    <div>
+                      <div className="about__list-title">{ponto.titulo}</div>
+                      <div className="about__list-desc">{ponto.texto}</div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </Reveal>
 
           <Reveal delay={120}>
             <div className="about__card">
               <dl>
-                {dados.map((d) => (
-                  <div className="about__card-row" key={d.rotulo}>
-                    <dt>
-                      <d.Icon size={16} strokeWidth={2} aria-hidden="true" />
-                      {d.rotulo}
-                    </dt>
-                    <dd>{d.valor}</dd>
-                  </div>
-                ))}
+                {sobre.ficha.map((d) => {
+                  const Icone = ICONES_TEXTO[d.icone];
+                  return (
+                    <div className="about__card-row" key={d.rotulo}>
+                      <dt>
+                        <Icone size={16} strokeWidth={2} aria-hidden="true" />
+                        {d.rotulo}
+                      </dt>
+                      <dd>{d.valor}</dd>
+                    </div>
+                  );
+                })}
               </dl>
             </div>
           </Reveal>

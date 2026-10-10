@@ -1,18 +1,19 @@
 import Reveal from './Reveal';
 import { MapPin, Phone, Clock, MessageCircle } from './icons';
 import { whatsappHref } from '../lib/whatsapp';
-import { profissional } from '../config/profissional';
+import { profissional, textos } from '../config/profissional';
 
 const ENDERECO = profissional.endereco;
 const MAPS_QUERY = encodeURIComponent(ENDERECO);
 
 export default function ContactSection() {
+  const { contato } = textos;
   return (
     <section id="contato" className="section contact">
       <div className="container">
         <Reveal>
-          <div className="section-eyebrow">Contato</div>
-          <h2 className="section-heading">Onde e como encontrar o consultório</h2>
+          <div className="section-eyebrow">{contato.chamada}</div>
+          <h2 className="section-heading">{contato.titulo}</h2>
         </Reveal>
 
         <div className="contact__grid">
@@ -23,7 +24,7 @@ export default function ContactSection() {
                   <MapPin size={18} strokeWidth={2} />
                 </span>
                 <div>
-                  <div className="contact__list-title">Endereço</div>
+                  <div className="contact__list-title">{contato.enderecoRotulo}</div>
                   <div className="contact__list-desc">
                     <a
                       href={`https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`}
@@ -40,7 +41,7 @@ export default function ContactSection() {
                   <Phone size={18} strokeWidth={2} />
                 </span>
                 <div>
-                  <div className="contact__list-title">Telefone / WhatsApp</div>
+                  <div className="contact__list-title">{contato.telefoneRotulo}</div>
                   <div className="contact__list-desc">
                     <a href={`tel:+${profissional.telefoneInternacional}`}>{profissional.telefoneExibicao}</a>
                   </div>
@@ -51,7 +52,7 @@ export default function ContactSection() {
                   <Clock size={18} strokeWidth={2} />
                 </span>
                 <div>
-                  <div className="contact__list-title">Horário de atendimento</div>
+                  <div className="contact__list-title">{contato.horarioRotulo}</div>
                   <div className="contact__list-desc">{profissional.horarioAtendimento}</div>
                 </div>
               </li>
@@ -59,16 +60,16 @@ export default function ContactSection() {
 
             <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn btn-light">
               <MessageCircle size={18} strokeWidth={2} aria-hidden="true" />
-              Conversar pelo WhatsApp
+              {contato.botaoWhatsapp}
             </a>
 
-            <div className="contact__crp">{profissional.nome} — {profissional.titulo} — {profissional.crp}</div>
+            <div className="contact__crp">{contato.assinatura}</div>
           </Reveal>
 
           <Reveal delay={120}>
             <div className="contact__map">
               <iframe
-                title="Localização do consultório"
+                title={contato.mapaTitulo}
                 src={`https://www.google.com/maps?q=${MAPS_QUERY}&output=embed`}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

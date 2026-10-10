@@ -1,25 +1,25 @@
 import { Star } from './icons';
-import { profissional } from '../config/profissional';
+import { textos } from '../config/profissional';
 
 export default function Hero() {
+  const { hero } = textos;
   return (
     <section id="topo" className="hero">
       <div className="container hero__inner">
         <div>
-          <div className="hero__eyebrow">Psicoterapia individual, de casal e infantil</div>
+          <div className="hero__eyebrow">{hero.chamada}</div>
           <h1 className="hero__title">
-            Um espaço tranquilo para você se ouvir com mais <em>clareza</em>.
+            {hero.tituloAntes}
+            <em>{hero.tituloDestaque}</em>
+            {hero.tituloDepois}
           </h1>
-          <p className="hero__lead">
-            Atendimento psicológico com abordagem cognitivo-comportamental, em {profissional.cidade}.
-            Um processo conduzido no seu ritmo, com escuta cuidadosa e embasamento técnico.
-          </p>
+          <p className="hero__lead">{hero.texto}</p>
           <div className="hero__actions">
             <a href="#agendamento" className="btn btn-primary">
-              Agendar horário
+              {hero.botaoPrincipal}
             </a>
             <a href="#sobre" className="btn btn-secondary">
-              Conhecer a abordagem
+              {hero.botaoSecundario}
             </a>
           </div>
         </div>
@@ -76,8 +76,7 @@ export default function Hero() {
               ))}
             </span>
             <span className="hero__badge-text">
-              <strong>{profissional.avaliacaoGoogle.nota}</strong> de avaliação no Google (
-              {profissional.avaliacaoGoogle.quantidade} avaliações)
+              <strong>{hero.selo.nota}</strong> {hero.selo.complemento}
             </span>
           </div>
         </div>

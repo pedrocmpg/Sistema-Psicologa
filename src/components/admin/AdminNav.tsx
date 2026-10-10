@@ -1,5 +1,5 @@
 import { LogOut } from '../icons';
-import { profissional } from '../../config/profissional';
+import { profissional, textos } from '../../config/profissional';
 import { ABAS, type Aba } from './abas';
 
 interface AdminNavProps {
@@ -19,7 +19,7 @@ export default function AdminNav({ aba, onChange, pendentes, onSair }: AdminNavP
         </span>
         <span className="admin-nav__brand-text">
           <span className="admin-nav__brand-name">{profissional.nome}</span>
-          <span className="admin-nav__brand-sub">Painel de agendamentos</span>
+          <span className="admin-nav__brand-sub">{textos.admin.subtituloMarca}</span>
         </span>
       </div>
 
